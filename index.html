@@ -164,7 +164,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.7rem;
-            min-width: 500px;
+            min-width: 580px;
         }
         th, td { padding: 6px 3px; text-align: left; border-bottom: 1px solid #eef2f5; white-space: nowrap; }
         th { background: #f5f7fa; font-weight: 600; }
@@ -672,18 +672,33 @@
             container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं <button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ नया लोन</button></div>`;
             container.classList.add("show"); return;
         }
-        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
+        // नया कॉलम जोड़ा गया है: प्रति दिन
+        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन (₹)</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
+            
+            // प्रति दिन वैल्यू तय करो
+            let perDayText = "";
+            if (l.period === 'month') {
+                perDayText = "—";
+            } else {
+                perDayText = `₹${formatAmount(daily)}`;
+            }
+            
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
-                <td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${periodText}</td><td>${l.date}</td><td>${escape(l.remark || '')}</td>
+                <td>₹${formatAmount(l.loanAmount)}</td>
+                <td>${returnText}</td>
+                <td>${perDayText}</td>
+                <td>${periodText}</td>
+                <td>${l.date}</td>
+                <td>${escape(l.remark || '')}</td>
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
@@ -816,7 +831,7 @@
     document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `hindulion_backup_${currentUser.id}_${ds}.json`, "application/json"); };
     document.getElementById("excelBackupBtn").onclick = async() => {
         let cashSheet = cashData.map(c=>({Type:"Cash", Name: c.name, Amount: c.amount, Date: c.date, Mode: c.mode, Remark: c.remark || ""}));
-        let loanSheet = loanData.map(l=>({Type:"Loan", Name: l.name, Address: l.address, "Loan Amount": l.loanAmount, "Return Amount": (l.period==='month'? "" : (l.loanAmount*1.2).toFixed(2)), "Period/Interest": l.period==='month'? `${l.interest}%` : `${l.period} days`, Date: l.date, Remark: l.remark || ""}));
+        let loanSheet = loanData.map(l=>({Type:"Loan", Name: l.name, Address: l.address, "Loan Amount": l.loanAmount, "Return Amount": (l.period==='month'? "" : (l.loanAmount*1.2).toFixed(2)), "Per Day": (l.period!=='month' ? ((l.loanAmount*1.2)/l.period).toFixed(0) : ""), "Period/Interest": l.period==='month'? `${l.interest}%` : `${l.period} days`, Date: l.date, Remark: l.remark || ""}));
         let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet);
         let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws1, "Cash"); XLSX.utils.book_append_sheet(wb, ws2, "Loan");
         let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"});
