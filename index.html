@@ -387,11 +387,13 @@
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;">
     </div>
 
+    <!-- Cash Section -->
     <div id="cashSection">
         <div class="date-list" id="cashDatesList"></div>
         <div class="entry-table" id="cashEntriesTable"></div>
     </div>
 
+    <!-- Loan Section -->
     <div id="loanSection" style="display:none;">
         <div class="date-list" id="loanDatesList"></div>
         <div class="entry-table" id="loanEntriesTable"></div>
@@ -457,8 +459,6 @@
 
 <script>
     // ========== GITHUB CONFIGURATION - CORS FREE URL ==========
-    // पहले raw.githubusercontent.com था (CORS error)
-    // अब GitHub Pages URL use करेंगे (कोई CORS error नहीं)
     const GITHUB_USERS_URL = "https://balavntnpower-gif.github.io/DailyCollection/users.json";
     
     let db;
@@ -476,7 +476,7 @@
     // ========== INDEXED DB FUNCTIONS ==========
     function openDB() {
         return new Promise((resolve, reject) => {
-            let req = indexedDB.open("HinduLionDailyCollectionDB", 1);
+            let req = indexedDB.open("HinduLionDailyCollectionDB", 2);
             req.onupgradeneeded = e => {
                 let db = e.target.result;
                 if (!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id", autoIncrement:true});
@@ -533,8 +533,14 @@
         }
     }
     
+    // ========== FORMATTING ==========
+    function formatAmount(amt) { return amt % 1 === 0 ? amt.toString() : amt.toFixed(2); }
+    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+    function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+    
     // ========== LOAD DATA (USER WISE) ==========
     async function loadAll() {
+        if (!db) return;
         let allCash = await getAll("cash");
         let allLoan = await getAll("loan");
         
@@ -569,10 +575,6 @@
         document.getElementById("loanTotalAmount").innerHTML = `₹${formatAmount(tl)}`;
     }
     
-    function formatAmount(amt) { return amt % 1 === 0 ? amt.toString() : amt.toFixed(2); }
-    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
-    function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-    
     // ========== CASH FUNCTIONS ==========
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     function renderCashDates() {
@@ -590,7 +592,7 @@
             container.classList.add("show"); return;
         }
         let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></thead><tbody>`;
-        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td><tr>`; });
+        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td>`; });
         html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
@@ -648,12 +650,6 @@
     
     // ========== LOAN FUNCTIONS ==========
     function getLoanTotalForDate(date) { return loanData.filter(l=>l.date===date).reduce((s,l)=>s+l.loanAmount,0); }
-    function renderLoanDates() {
-        let arr = Array.from(loanDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
-        let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
-        document.getElementById("loanDatesList").innerHTML = html || "<div style='padding:12px'>कोई तारीख नहीं</div>";
-        document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", () => selectLoanDate(el.getAttribute("data-date"))); });
-    }
     function calcReturnAndDaily(l){
         if(l.period === 'month'){ 
             let ret = l.loanAmount + (l.loanAmount * l.interest / 100); 
@@ -663,33 +659,32 @@
             return {ret, daily: ret / l.period}; 
         }
     }
+    function renderLoanDates() {
+        let arr = Array.from(loanDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
+        let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
+        document.getElementById("loanDatesList").innerHTML = html || "<div style='padding:12px'>कोई तारीख नहीं</div>";
+        document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", () => selectLoanDate(el.getAttribute("data-date"))); });
+    }
     function renderLoanEntries() {
         let container = document.getElementById("loanEntriesTable");
         if(!selectedLoanDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = loanData.filter(l=>l.date===selectedLoanDate);
-        if(entries.length===0){ 
-            container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं <button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ नया लोन</button></div>`; 
-            container.classList.add("show"); 
-            return; 
+        if(entries.length===0){
+            container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं <button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ नया लोन</button></div>`;
+            container.classList.add("show"); return;
         }
-        let html = `<tr><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
+        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
-            let dailyText = daily ? `₹${formatAmount(daily)}` : "";
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
-                <td>₹${formatAmount(l.loanAmount)}</td>
-                <td>${returnText}</td>
-                <td>${periodText}</td>
-                <td>${dailyText}</td>
-                <td>${l.date}</td>
-                <td>${escape(l.remark || '')}</td>
+                <td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${periodText}</td><td>${l.date}</td><td>${escape(l.remark || '')}</td>
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
@@ -822,7 +817,7 @@
     document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `hindulion_backup_${currentUser.id}_${ds}.json`, "application/json"); };
     document.getElementById("excelBackupBtn").onclick = async() => {
         let cashSheet = cashData.map(c=>({Type:"Cash", Name: c.name, Amount: c.amount, Date: c.date, Mode: c.mode, Remark: c.remark || ""}));
-        let loanSheet = loanData.map(l=>({Type:"Loan", Name: l.name, Address: l.address, "Loan Amount": l.loanAmount, "Return Amount": (l.period==='month'? "" : (l.loanAmount*1.2).toFixed(2)), "Period/Interest": l.period==='month'? `${l.interest}%` : `${l.period} days`, "Per Day": (l.period!=='month' ? (l.loanAmount*1.2/l.period).toFixed(2) : ""), Date: l.date, Remark: l.remark || ""}));
+        let loanSheet = loanData.map(l=>({Type:"Loan", Name: l.name, Address: l.address, "Loan Amount": l.loanAmount, "Return Amount": (l.period==='month'? "" : (l.loanAmount*1.2).toFixed(2)), "Period/Interest": l.period==='month'? `${l.interest}%` : `${l.period} days`, Date: l.date, Remark: l.remark || ""}));
         let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet);
         let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws1, "Cash"); XLSX.utils.book_append_sheet(wb, ws2, "Loan");
         let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"});
@@ -907,7 +902,7 @@
             return;
         }
         
-        // ===== HARDCODED ADMIN (hindu / Lion) - ALWAYS WORKS =====
+        // ===== HARDCODED ADMIN =====
         if (id.toLowerCase() === 'hindu' && password === 'Lion') {
             currentUser = { id: 'hindu', name: 'हिंदू', role: 'admin', expiry: null };
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
