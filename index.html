@@ -456,8 +456,10 @@
 </div>
 
 <script>
-    // ========== GITHUB CONFIGURATION - CORRECT URL ==========
-    const GITHUB_USERS_URL = "https://raw.githubusercontent.com/balavntnpower-gif/DailyCollection/refs/heads/main/users.json";
+    // ========== GITHUB CONFIGURATION - CORS FREE URL ==========
+    // पहले raw.githubusercontent.com था (CORS error)
+    // अब GitHub Pages URL use करेंगे (कोई CORS error नहीं)
+    const GITHUB_USERS_URL = "https://balavntnpower-gif.github.io/DailyCollection/users.json";
     
     let db;
     let cashData = [], loanData = [];
@@ -588,7 +590,7 @@
             container.classList.add("show"); return;
         }
         let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></thead><tbody>`;
-        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
+        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td><tr>`; });
         html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
@@ -670,7 +672,7 @@
             container.classList.add("show"); 
             return; 
         }
-        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
+        let html = `<tr><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
@@ -685,7 +687,7 @@
                 <td>${l.date}</td>
                 <td>${escape(l.remark || '')}</td>
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
-            </table>`;
+            </tr>`;
         });
         html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
@@ -774,6 +776,7 @@
     
     // ========== NOTE COUNTING ==========
     async function loadNotes() {
+        if (!db) return;
         let tx = db.transaction("notes", "readonly");
         let req = tx.objectStore("notes").get(`noteData_${currentUser.id}`);
         req.onsuccess = () => {
@@ -873,7 +876,7 @@
     async function fetchUsersFromGitHub() {
         document.getElementById("networkStatus").innerText = "🔄 Connecting...";
         try {
-            let response = await fetch(GITHUB_USERS_URL, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+            let response = await fetch(GITHUB_USERS_URL);
             if (!response.ok) throw new Error();
             let data = await response.json();
             githubUsers = data;
