@@ -355,6 +355,7 @@
         <button id="loginBtn">🔐 LOGIN</button>
         <div id="loginError" class="login-error"></div>
         <div id="loginLoading" class="login-loading"></div>
+        <div id="networkStatus" style="font-size: 10px; margin-top: 8px; color: #888;"></div>
     </div>
 </div>
 
@@ -484,7 +485,6 @@
 <script>
     // ========== GITHUB CONFIGURATION ==========
     const GITHUB_USERS_URL = "https://raw.githubusercontent.com/balavntnpower-gif/DailyCollection/refs/heads/main/users.json";
-    const GITHUB_API_URL = "https://api.github.com/repos/balavntnpower-gif/DailyCollection/contents/users.json";
     
     // ========== GLOBAL VARIABLES ==========
     let db;
@@ -614,7 +614,7 @@
         }
         let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody><td><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectCashDate(date) { selectedCashDate = date; renderCashDates(); renderCashEntries(); }
@@ -695,7 +695,7 @@
             container.classList.add("show"); 
             return; 
         }
-        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
+        let html = `</table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
@@ -712,7 +712,7 @@
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
@@ -922,25 +922,60 @@
         alert("⚠️ नया यूजर जोड़ने के लिए:\n\n1. GitHub पर जाएं\n2. users.json file खोलें\n3. नीचे दिए format में नया user add करें:\n\n{\n  \"newId\": {\n    \"password\": \"pass\",\n    \"role\": \"user\",\n    \"expiry\": \"2026-12-31\",\n    \"name\": \"नाम\"\n  }\n}\n\n4. Commit करें\n\nApp restart करने पर नया user active हो जाएगा।");
     }
     
-    // ========== LOGIN SYSTEM ==========
+    // ========== LOGIN SYSTEM (WITH NO CACHE) ==========
     async function fetchUsersFromGitHub() {
+        // Show network status
+        document.getElementById("networkStatus").innerText = "🔄 Connecting to server...";
+        
         try {
-            let response = await fetch(GITHUB_USERS_URL);
+            // Add cache control - no cache
+            let response = await fetch(GITHUB_USERS_URL, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                }
+            });
+            
             if (!response.ok) throw new Error("Network error");
+            
             let data = await response.json();
             githubUsers = data;
-            localStorage.setItem("githubUsersCache", JSON.stringify({ data, timestamp: Date.now() }));
+            
+            // Save to cache for offline use (7 days backup)
+            localStorage.setItem("githubUsersCache", JSON.stringify({ 
+                data, 
+                timestamp: Date.now(),
+                expiry: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
+            }));
+            
+            document.getElementById("networkStatus").innerText = "✅ Online - Latest data";
+            setTimeout(() => {
+                document.getElementById("networkStatus").innerText = "";
+            }, 2000);
+            
             return data;
+            
         } catch (error) {
-            console.log("Fetch error, trying cache");
+            console.log("Fetch error, using offline cache");
+            
+            // Try to get from cache
             let cached = localStorage.getItem("githubUsersCache");
             if (cached) {
                 let cacheData = JSON.parse(cached);
-                if (Date.now() - cacheData.timestamp < 86400000) {
-                    githubUsers = cacheData.data;
-                    return cacheData.data;
-                }
+                githubUsers = cacheData.data;
+                
+                let cacheAge = Math.round((Date.now() - cacheData.timestamp) / (1000 * 60 * 60));
+                document.getElementById("networkStatus").innerHTML = `📡 Offline mode (cache ${cacheAge} hrs old)`;
+                
+                setTimeout(() => {
+                    document.getElementById("networkStatus").innerHTML = "";
+                }, 3000);
+                
+                return cacheData.data;
             }
+            
+            document.getElementById("networkStatus").innerText = "❌ No internet & no cache!";
             return null;
         }
     }
@@ -959,7 +994,7 @@
         
         let usersData = await fetchUsersFromGitHub();
         if (!usersData || !usersData.users) {
-            document.getElementById("loginError").innerText = "❌ Internet connection issue! Try again.";
+            document.getElementById("loginError").innerText = "❌ Unable to verify! Check internet.";
             document.getElementById("loginLoading").innerText = "";
             return;
         }
