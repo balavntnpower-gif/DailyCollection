@@ -163,100 +163,100 @@
             font-weight: bold;
             font-size: 0.75rem;
         }
+        
+        /* === MODAL STYLES === */
         .modal {
             display: none;
             position: fixed;
-            top:0; left:0;
-            width:100%; height:100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.6);
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             z-index: 1000;
+            overflow-y: auto;
+            padding: 8px 0;
         }
         .modal-card {
             background: white;
-            width: 90%;
-            max-width: 360px;
-            border-radius: 28px;
-            padding: 20px;
+            width: 92%;
+            max-width: 320px;
+            border-radius: 24px;
+            padding: 10px 14px;
+            margin-top: 8vh;
+            margin-bottom: 20px;
         }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 0.75rem; }
+        .modal-card h3 {
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .form-group { margin-bottom: 6px; }
         .form-group input, .form-group select {
             width: 100%;
-            padding: 8px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
+            padding: 8px 12px;
+            border-radius: 24px;
+            border: 1px solid #ddd;
             font-size: 0.8rem;
+            background: white;
         }
-        .modal-buttons { display: flex; justify-content: center; margin-top: 15px; }
+        .modal-buttons { display: flex; justify-content: center; margin-top: 12px; margin-bottom: 6px; }
         .btn-save {
             background: #0f6b3a;
             color: white;
             border: none;
-            padding: 10px 24px;
+            padding: 8px 24px;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
+            width: 100%;
         }
+        
+        /* === NOTE COUNTING GRID === */
         .note-grid {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin: 12px 0;
+            gap: 5px;
+            margin: 8px 0;
         }
         .note-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: 40px 48px 55px;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            font-size: 0.85rem;
+            gap: 6px;
         }
-        .note-label { font-weight: 600; width: 45px; }
-        .note-input { flex: 1; padding: 6px 8px; border-radius: 20px; border: 1px solid #ccc; text-align: center; font-size: 0.85rem; }
-        .note-value { min-width: 65px; text-align: right; font-weight: 600; color: #0f6b3a; font-size: 0.85rem; }
-        .total-row { text-align: center; font-size: 1rem; font-weight: bold; margin: 8px 0; padding: 6px; background: #eef2fa; border-radius: 20px; }
-        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.7rem; z-index: 1200; }
-        .auth-overlay {
-            position: fixed;
-            top:0; left:0;
-            width:100%; height:100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .auth-card {
-            background: white;
-            padding: 24px;
-            border-radius: 28px;
-            text-align: center;
-            width: 80%;
-            max-width: 280px;
-        }
-        .auth-card input {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 40px;
+        .note-label { font-weight: 600; font-size: 0.8rem; }
+        .note-input { 
+            width: 48px;
+            min-width: 48px;
+            max-width: 48px;
+            padding: 5px 0;
+            border-radius: 16px;
             border: 1px solid #ccc;
             text-align: center;
+            font-size: 0.7rem;
         }
-        .hide-app { display: none; }
+        .note-value { text-align: right; font-weight: 600; color: #0f6b3a; font-size: 0.7rem; white-space: nowrap; }
+        .total-row { text-align: center; font-size: 0.85rem; font-weight: bold; margin: 5px 0; padding: 4px; background: #eef2fa; border-radius: 20px; }
+        
+        /* === REMINDER POPUP - CENTER === */
         .reminder-popup {
             position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: white;
             border-radius: 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             z-index: 2500;
             text-align: center;
             padding: 20px;
-            border: 1px solid #0f6b3a;
+            width: 85%;
+            max-width: 300px;
+            border: 2px solid #0f6b3a;
         }
         .reminder-popup.hide { display: none; }
         .reminder-btn {
@@ -268,19 +268,78 @@
             margin-top: 15px;
             font-weight: bold;
             cursor: pointer;
+            width: 100%;
         }
+        
+        /* === LOGIN SCREEN === */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 28px;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+        }
+        .login-card h2 { color: #0f6b3a; margin-bottom: 5px; }
+        .login-card .sub { font-size: 11px; color: #666; margin-bottom: 20px; }
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            font-size: 14px;
+        }
+        .login-card button {
+            width: 100%;
+            padding: 12px;
+            background: #0f6b3a;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-error { color: red; font-size: 12px; margin-top: 10px; }
+        .login-loading { color: #0f6b3a; font-size: 12px; margin-top: 10px; }
+        
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.7rem; z-index: 1200; }
+        .hide-app { display: none; }
+        .admin-only { display: none; }
+        input:focus, select:focus { scroll-margin-top: 100px; }
     </style>
 </head>
 <body>
-<div id="authOverlay" class="auth-overlay">
-    <div class="auth-card">
-        <i class="fas fa-lock" style="font-size:2rem; color:#0f6b3a;"></i>
-        <h3>Enter ID</h3>
-        <input type="text" id="authIdInput" placeholder="ID">
-        <button id="authSubmitBtn" style="background:#0f6b3a; color:white; border:none; padding:8px 20px; border-radius:40px;">Submit</button>
+
+<!-- LOGIN SCREEN -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <i class="fas fa-hand-holding-usd" style="font-size: 3rem; color: #0f6b3a;"></i>
+        <h2>HLB FINANCE</h2>
+        <div class="sub">Powered By Hindu Lion Brothers</div>
+        <input type="text" id="loginId" placeholder="ID" autocomplete="off">
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="off">
+        <button id="loginBtn">🔐 LOGIN</button>
+        <div id="loginError" class="login-error"></div>
+        <div id="loginLoading" class="login-loading"></div>
     </div>
 </div>
 
+<!-- MAIN APP -->
 <div id="mainApp" class="hide-app">
 <div class="container">
     <div class="header">
@@ -307,6 +366,11 @@
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;">
     </div>
 
+    <!-- Admin Panel Button - Only visible to admin -->
+    <div id="adminPanelBtn" class="admin-only" style="margin-bottom: 10px;">
+        <button id="openAdminBtn" style="background:#8e44ad; width:100%; padding:8px; border-radius:40px;">👑 एडमिन पैनल</button>
+    </div>
+
     <div id="cashSection">
         <div class="date-list" id="cashDatesList"></div>
         <div class="entry-table" id="cashEntriesTable"></div>
@@ -328,26 +392,81 @@
 </div>
 
 <!-- Cash Modal -->
-<div id="cashModal" class="modal"><div class="modal-card"><h3 style="text-align:center;">नई प्रविष्टि</h3><form id="cashForm"><input type="hidden" id="cashId"><div class="form-group"><label>नाम</label><input id="cashName" required></div><div class="form-group"><label>रकम (₹)</label><input type="number" id="cashAmount" required></div><div class="form-group"><label>तारीख (dd/mm/yyyy)</label><input id="cashDate" required></div><div class="form-group"><label>मोड</label><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div><div class="form-group"><label>Remark (optional)</label><input id="cashRemark" placeholder="कोई नोट..."></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
+<div id="cashModal" class="modal">
+    <div class="modal-card">
+        <h3 style="text-align:center;">नई प्रविष्टि</h3>
+        <form id="cashForm">
+            <input type="hidden" id="cashId">
+            <div class="form-group"><input id="cashName" placeholder="नाम" required></div>
+            <div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div>
+            <div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
+            <div class="form-group"><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div>
+            <div class="form-group"><input id="cashRemark" placeholder="Remark (optional)"></div>
+            <div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div>
+        </form>
+    </div>
+</div>
 
 <!-- Loan Modal -->
-<div id="loanModal" class="modal"><div class="modal-card"><h3 style="text-align:center;">नया लोन</h3><form id="loanForm"><input type="hidden" id="loanId"><div class="form-group"><label>नाम</label><input id="loanName" required></div><div class="form-group"><label>पता</label><input id="loanAddress" required></div><div class="form-group"><label>लोन रकम (₹)</label><input type="number" id="loanAmount" required></div><div class="form-group"><label>तारीख (dd/mm/yyyy)</label><input id="loanDate" required></div><div class="form-group"><label>अवधि</label><select id="loanPeriod"><option value="month">Month (%)</option><option value="60">60 दिन</option><option value="80">80 दिन</option><option value="100">100 दिन</option><option value="120">120 दिन</option></select></div><div id="percentDiv"><div class="form-group"><label>ब्याज (%)</label><input type="number" id="interestPercent" value="10"></div></div><div class="form-group"><label>Remark (optional)</label><input id="loanRemark" placeholder="कोई नोट..."></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
+<div id="loanModal" class="modal">
+    <div class="modal-card">
+        <h3 style="text-align:center;">नया लोन</h3>
+        <form id="loanForm">
+            <input type="hidden" id="loanId">
+            <div class="form-group"><input id="loanName" placeholder="नाम" required></div>
+            <div class="form-group"><input id="loanAddress" placeholder="पता" required></div>
+            <div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div>
+            <div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
+            <div class="form-group"><select id="loanPeriod"><option value="month">Month (%)</option><option value="60">60 दिन</option><option value="80">80 दिन</option><option value="100">100 दिन</option><option value="120">120 दिन</option></select></div>
+            <div id="percentDiv"><div class="form-group"><input type="number" id="interestPercent" placeholder="ब्याज (%)" value="10"></div></div>
+            <div class="form-group"><input id="loanRemark" placeholder="Remark (optional)"></div>
+            <div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div>
+        </form>
+    </div>
+</div>
 
 <!-- Note Counting Modal -->
 <div id="noteModal" class="modal">
     <div class="modal-card">
-        <h3 style="font-size:1.2rem; text-align:center;">🧮 Note Counting</h3>
+        <h3 style="font-size:1rem; text-align:center;">🧮 Note Counting</h3>
         <div class="total-row">💰 Total: ₹<span id="noteTotal">0</span></div>
         <div class="note-grid" id="noteGrid"></div>
-        <div class="modal-buttons" style="gap: 10px;">
-            <button id="resetNotesBtn" style="background:#eef2fa; border:none; padding:8px 20px; border-radius:40px;">Reset</button>
-            <button id="saveNotesBtn" style="background:#0f6b3a; color:white; border:none; padding:8px 20px; border-radius:40px;">सेव करें</button>
-            <button id="closeNoteModalBtn" style="background:#ccc; border:none; padding:8px 20px; border-radius:40px;">बंद करें</button>
+        <div class="modal-buttons" style="gap: 8px;">
+            <button id="resetNotesBtn" style="background:#eef2fa; border:none; padding:6px 16px; border-radius:40px; font-size:0.7rem;">Reset</button>
+            <button id="saveNotesBtn" style="background:#0f6b3a; color:white; border:none; padding:6px 16px; border-radius:40px; font-size:0.7rem;">सेव करें</button>
+            <button id="closeNoteModalBtn" style="background:#ccc; border:none; padding:6px 16px; border-radius:40px; font-size:0.7rem;">बंद करें</button>
         </div>
     </div>
 </div>
 
+<!-- Admin Panel Modal -->
+<div id="adminModal" class="modal">
+    <div class="modal-card" style="max-width: 400px;">
+        <h3>👑 एडमिन पैनल</h3>
+        <div id="adminUsersList" style="max-height: 400px; overflow-y: auto;"></div>
+        <div style="margin-top: 15px;">
+            <h4 style="font-size: 0.85rem;">➕ नया यूजर बनाएं</h4>
+            <div class="form-group"><input id="newUserId" placeholder="ID (username)"></div>
+            <div class="form-group"><input id="newUserPassword" placeholder="Password"></div>
+            <div class="form-group"><input id="newUserName" placeholder="नाम (हिंदी)"></div>
+            <div class="form-group"><input type="date" id="newUserExpiry" value="2026-12-31"></div>
+            <select id="newUserRole" class="form-group">
+                <option value="user">सामान्य यूजर</option>
+                <option value="admin">एडमिन</option>
+            </select>
+            <button onclick="addNewUserFromAdmin()" style="width:100%; background:#27ae60;">✅ यूजर बनाएं</button>
+            <p style="font-size: 9px; color: #888; margin-top: 8px;">⚠️ यूजर GitHub में सेव होंगे। आपको JSON file update करनी होगी।</p>
+        </div>
+        <div class="modal-buttons"><button onclick="closeAdminModal()" class="btn-save" style="background:#666;">बंद करें</button></div>
+    </div>
+</div>
+
 <script>
+    // ========== GITHUB CONFIGURATION ==========
+    const GITHUB_USERS_URL = "https://raw.githubusercontent.com/balavntnpower-gif/DailyCollection/refs/heads/main/users.json";
+    const GITHUB_API_URL = "https://api.github.com/repos/balavntnpower-gif/DailyCollection/contents/users.json";
+    
+    // ========== GLOBAL VARIABLES ==========
     let db;
     let cashData = [], loanData = [];
     let cashDatesSet = new Set(), loanDatesSet = new Set();
@@ -355,18 +474,24 @@
     let noteCounts = { 500: "", 200: "", 100: "", 50: "", 20: "", 10: "", 5: "" };
     const denoms = [500, 200, 100, 50, 20, 10, 5];
     let currentActiveTab = "cash";
-
+    let currentUser = null;
+    let githubUsers = {};
+    
+    // ========== INDEXED DB FUNCTIONS ==========
     function openDB() {
-        let req = indexedDB.open("HinduLionFinalDB", 7);
-        req.onupgradeneeded = e => {
-            let db = e.target.result;
-            if (!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id", autoIncrement:true});
-            if (!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id", autoIncrement:true});
-            if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"});
-        };
-        req.onsuccess = e => { db = e.target.result; loadAll(); loadNotes(); checkBackupReminder(); };
+        return new Promise((resolve, reject) => {
+            let req = indexedDB.open("HinduLionFinalDB_v2", 1);
+            req.onupgradeneeded = e => {
+                let db = e.target.result;
+                if (!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id", autoIncrement:true});
+                if (!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id", autoIncrement:true});
+                if (!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"});
+            };
+            req.onsuccess = e => { db = e.target.result; resolve(db); };
+            req.onerror = e => reject(e);
+        });
     }
-
+    
     async function getAll(store) {
         return new Promise(r => { let tx = db.transaction(store, "readonly"); tx.objectStore(store).getAll().onsuccess = e => r(e.target.result || []); });
     }
@@ -380,47 +505,35 @@
         tx.objectStore(store).delete(id);
         return new Promise(r => tx.oncomplete = r);
     }
-
-    async function loadNotes() {
-        let tx = db.transaction("notes", "readonly");
-        let req = tx.objectStore("notes").get("noteData");
-        req.onsuccess = () => {
-            if(req.result) noteCounts = req.result.counts || { 500: "", 200: "", 100: "", 50: "", 20: "", 10: "", 5: "" };
-            renderNotePopup();
-        };
-    }
-    async function saveNotesToDB() { await save("notes", { id: "noteData", counts: noteCounts }); showToast("✅ Note counts saved"); }
-    function calculateNoteTotal() { let total = 0; for(let d of denoms) { let val = parseInt(noteCounts[d]); if(!isNaN(val) && val > 0) total += val * d; } return total; }
-    function renderNotePopup() {
-        let container = document.getElementById("noteGrid");
-        let html = '';
-        for(let d of denoms) {
-            let count = noteCounts[d] === "" ? "" : noteCounts[d];
-            let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0;
-            html += `<div class="note-row"><span class="note-label">₹${d}</span><input type="number" class="note-input" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1"><span class="note-value">₹${value.toLocaleString('en-IN')}</span></div>`;
-        }
-        container.innerHTML = html;
-        document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
-        document.querySelectorAll(".note-input").forEach(inp => {
-            inp.addEventListener("input", (e) => {
-                let denom = parseInt(e.target.dataset.denom);
-                let val = e.target.value === "" ? "" : parseInt(e.target.value);
-                if(isNaN(val)) val = "";
-                noteCounts[denom] = val === "" ? "" : val;
-                let valNum = (val === "" || isNaN(val)) ? 0 : val;
-                let vs = e.target.parentElement.querySelector(".note-value");
-                if(vs) vs.innerText = `₹${(valNum * denom).toLocaleString('en-IN')}`;
-                document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
-            });
-        });
-    }
-    function resetNoteFields() { for(let d of denoms) noteCounts[d] = ""; renderNotePopup(); }
-
-    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
-    function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     
-    function formatAmount(amt) {
-        return amt % 1 === 0 ? amt.toString() : amt.toFixed(2);
+    // ========== LOAD DATA (USER WISE) ==========
+    async function loadAll() {
+        let allCash = await getAll("cash");
+        let allLoan = await getAll("loan");
+        
+        // Filter by current user
+        if (currentUser && currentUser.role !== 'admin') {
+            cashData = allCash.filter(c => c.userId === currentUser.id);
+            loanData = allLoan.filter(l => l.userId === currentUser.id);
+        } else {
+            cashData = allCash;
+            loanData = allLoan;
+        }
+        
+        cashDatesSet = new Set(cashData.map(c => c.date));
+        loanDatesSet = new Set(loanData.map(l => l.date));
+        
+        updateTotals();
+        renderCashDates();
+        renderLoanDates();
+        
+        if(selectedCashDate && cashDatesSet.has(selectedCashDate)) renderCashEntries();
+        else if(cashDatesSet.size) { selectedCashDate = Array.from(cashDatesSet)[0]; renderCashEntries(); renderCashDates(); }
+        else { selectedCashDate = null; document.getElementById("cashEntriesTable").classList.remove("show"); }
+        
+        if(selectedLoanDate && loanDatesSet.has(selectedLoanDate)) renderLoanEntries();
+        else if(loanDatesSet.size) { selectedLoanDate = Array.from(loanDatesSet)[0]; renderLoanEntries(); renderLoanDates(); }
+        else { selectedLoanDate = null; document.getElementById("loanEntriesTable").classList.remove("show"); }
     }
     
     function updateTotals() {
@@ -429,45 +542,12 @@
         document.getElementById("cashTotalAmount").innerHTML = `₹${formatAmount(tc)}`;
         document.getElementById("loanTotalAmount").innerHTML = `₹${formatAmount(tl)}`;
     }
-
-    // BACKUP REMINDER
-    function checkBackupReminder() {
-        let now = new Date();
-        let currentHour = now.getHours();
-        let currentDateStr = now.toDateString();
-        let lastReminder3PM = localStorage.getItem("lastReminder3PM");
-        let lastReminder8PM = localStorage.getItem("lastReminder8PM");
-        
-        if(currentHour >= 15 && lastReminder3PM !== currentDateStr) {
-            showReminderPopup();
-            localStorage.setItem("lastReminder3PM", currentDateStr);
-        } else if(currentHour >= 20 && lastReminder8PM !== currentDateStr) {
-            showReminderPopup();
-            localStorage.setItem("lastReminder8PM", currentDateStr);
-        }
-    }
     
-    function showReminderPopup() {
-        let popup = document.getElementById("reminderPopup");
-        if(popup) popup.classList.remove("hide");
-    }
+    function formatAmount(amt) { return amt % 1 === 0 ? amt.toString() : amt.toFixed(2); }
+    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+    function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     
-    async function doJSONBackupAndClose() {
-        let data = { cash: cashData, loan: loanData, cashDates: Array.from(cashDatesSet), loanDates: Array.from(loanDatesSet) };
-        let jsonStr = JSON.stringify(data, null, 2);
-        let blob = new Blob([jsonStr], {type:"application/json"});
-        let a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `hindulion_backup_${getTodayForFilename()}.json`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        document.getElementById("reminderPopup").classList.add("hide");
-        showToast("📁 JSON Backup डाउनलोड हुआ");
-    }
-    if(document.getElementById("reminderBackupBtn")) 
-        document.getElementById("reminderBackupBtn").onclick = doJSONBackupAndClose;
-
-    // CASH SECTION
+    // ========== CASH FUNCTIONS ==========
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     function renderCashDates() {
         let arr = Array.from(cashDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
@@ -483,7 +563,7 @@
             container.innerHTML = `<div style="text-align:center;padding:20px">कोई प्रविष्टि नहीं <button class="add-btn" onclick="openCashForDate('${selectedCashDate}')">+ नई प्रविष्टि</button></div>`;
             container.classList.add("show"); return;
         }
-        let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></tr></thead><tbody>`;
+        let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
         html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
@@ -528,7 +608,9 @@
             amount: parseFloat(document.getElementById("cashAmount").value),
             date: document.getElementById("cashDate").value.trim(),
             mode: document.getElementById("cashMode").value,
-            remark: document.getElementById("cashRemark").value.trim() || ""
+            remark: document.getElementById("cashRemark").value.trim() || "",
+            userId: currentUser.id,
+            userName: currentUser.name
         };
         if(!obj.name || isNaN(obj.amount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें");
         if(id) obj.id = parseInt(id);
@@ -537,8 +619,8 @@
         await loadAll();
         if(obj.date) selectCashDate(obj.date);
     });
-
-    // LOAN SECTION
+    
+    // ========== LOAN FUNCTIONS ==========
     function getLoanTotalForDate(date) { return loanData.filter(l=>l.date===date).reduce((s,l)=>s+l.loanAmount,0); }
     function renderLoanDates() {
         let arr = Array.from(loanDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
@@ -564,7 +646,7 @@
             container.classList.add("show"); 
             return; 
         }
-        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></tr></thead><tbody>`;
+        let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>अवधि/ब्याज</th><th>पर दिन</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
@@ -572,18 +654,13 @@
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
-                <td>₹${formatAmount(l.loanAmount)}</td>
-                <td>${returnText}</td>
-                <td>${periodText}</td>
-                <td>${dailyText}</td>
-                <td>${l.date}</td>
+                <td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${periodText}</td><td>${dailyText}</td><td>${l.date}</td>
                 <td>${escape(l.remark || '')}</td>
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
-        container.innerHTML = html; 
-        container.classList.add("show");
+        html += `</tbody><tr><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
     window.openLoanForDate = (date) => {
@@ -637,7 +714,9 @@
             loanAmount: parseFloat(document.getElementById("loanAmount").value),
             date: document.getElementById("loanDate").value.trim(),
             period: period,
-            remark: document.getElementById("loanRemark").value.trim() || ""
+            remark: document.getElementById("loanRemark").value.trim() || "",
+            userId: currentUser.id,
+            userName: currentUser.name
         };
         if(!obj.name || !obj.address || isNaN(obj.loanAmount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें");
         if(period === "month") obj.interest = parseFloat(document.getElementById("interestPercent").value);
@@ -650,8 +729,8 @@
     document.getElementById("loanPeriod").addEventListener("change", e=>{ 
         document.getElementById("percentDiv").style.display = e.target.value === "month" ? "block" : "none"; 
     });
-
-    // CREATE DATE
+    
+    // ========== CREATE DATE ==========
     document.getElementById("createDateBtn").onclick = () => {
         let today = getToday();
         if(currentActiveTab === "cash") {
@@ -664,11 +743,52 @@
             selectLoanDate(today);
         }
     };
-
-    // BACKUP & RESTORE
+    
+    // ========== NOTE COUNTING ==========
+    async function loadNotes() {
+        let tx = db.transaction("notes", "readonly");
+        let req = tx.objectStore("notes").get(`noteData_${currentUser.id}`);
+        req.onsuccess = () => {
+            if(req.result) noteCounts = req.result.counts || { 500: "", 200: "", 100: "", 50: "", 20: "", 10: "", 5: "" };
+            renderNotePopup();
+        };
+    }
+    async function saveNotesToDB() { await save("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); showToast("✅ Note counts saved"); }
+    function calculateNoteTotal() { let total = 0; for(let d of denoms) { let val = parseInt(noteCounts[d]); if(!isNaN(val) && val > 0) total += val * d; } return total; }
+    function renderNotePopup() {
+        let container = document.getElementById("noteGrid");
+        let html = '';
+        for(let d of denoms) {
+            let count = noteCounts[d] === "" ? "" : noteCounts[d];
+            let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0;
+            html += `<div class="note-row"><span class="note-label">₹${d}</span><input type="number" class="note-input" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1"><span class="note-value">₹${value.toLocaleString('en-IN')}</span></div>`;
+        }
+        container.innerHTML = html;
+        document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
+        document.querySelectorAll(".note-input").forEach(inp => {
+            inp.addEventListener("input", (e) => {
+                let denom = parseInt(e.target.dataset.denom);
+                let val = e.target.value === "" ? "" : parseInt(e.target.value);
+                if(isNaN(val)) val = "";
+                noteCounts[denom] = val === "" ? "" : val;
+                let valNum = (val === "" || isNaN(val)) ? 0 : val;
+                let vs = e.target.parentElement.querySelector(".note-value");
+                if(vs) vs.innerText = `₹${(valNum * denom).toLocaleString('en-IN')}`;
+                document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
+            });
+        });
+    }
+    function resetNoteFields() { for(let d of denoms) noteCounts[d] = ""; renderNotePopup(); }
+    
+    document.getElementById("noteCountingIcon").onclick = () => { renderNotePopup(); document.getElementById("noteModal").style.display = "flex"; };
+    document.getElementById("resetNotesBtn").onclick = () => { resetNoteFields(); };
+    document.getElementById("saveNotesBtn").onclick = async() => { await saveNotesToDB(); document.getElementById("noteModal").style.display = "none"; };
+    document.getElementById("closeNoteModalBtn").onclick = () => document.getElementById("noteModal").style.display = "none";
+    
+    // ========== BACKUP & RESTORE ==========
     async function getAllData() { return { cash: cashData, loan: loanData, cashDates: Array.from(cashDatesSet), loanDates: Array.from(loanDatesSet) }; }
     function downloadFile(content, filename, type) { let blob = new Blob([content], {type}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href); showToast(`📁 ${filename} डाउनलोड हुआ`); }
-    document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `hindulion_backup_${ds}.json`, "application/json"); };
+    document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `hindulion_backup_${currentUser.id}_${ds}.json`, "application/json"); };
     document.getElementById("excelBackupBtn").onclick = async() => {
         let cashSheet = cashData.map(c=>({Type:"Cash", Name: c.name, Amount: c.amount, Date: c.date, Mode: c.mode, Remark: c.remark || ""}));
         let loanSheet = loanData.map(l=>({Type:"Loan", Name: l.name, Address: l.address, "Loan Amount": l.loanAmount, "Return Amount": (l.period==='month'? "" : (l.loanAmount*1.2).toFixed(2)), "Period/Interest": l.period==='month'? `${l.interest}%` : `${l.period} days`, "Per Day": (l.period!=='month' ? (l.loanAmount*1.2/l.period).toFixed(2) : ""), Date: l.date, Remark: l.remark || ""}));
@@ -678,7 +798,7 @@
         let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
         let a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `hindulion_backup_${getTodayForFilename()}.xlsx`;
+        a.download = `hindulion_backup_${currentUser.id}_${getTodayForFilename()}.xlsx`;
         a.click();
         URL.revokeObjectURL(a.href);
         showToast("📊 Excel Backup डाउनलोड हुआ");
@@ -686,52 +806,197 @@
     document.getElementById("restoreBtn").onclick = () => document.getElementById("restoreFileInput").click();
     document.getElementById("restoreFileInput").addEventListener("change", async(e) => {
         let file = e.target.files[0]; if(!file) return; let text = await file.text();
-        try { let data = JSON.parse(text); if(data.cash) for(let c of data.cash) await save("cash", c); if(data.loan) for(let l of data.loan) await save("loan", l); if(data.cashDates) data.cashDates.forEach(d=>cashDatesSet.add(d)); if(data.loanDates) data.loanDates.forEach(d=>loanDatesSet.add(d)); await loadAll(); showToast("✅ Restore सफल"); } catch(e) { alert("Invalid JSON"); } e.target.value = "";
+        try { let data = JSON.parse(text); if(data.cash) for(let c of data.cash) { c.userId = currentUser.id; await save("cash", c); } if(data.loan) for(let l of data.loan) { l.userId = currentUser.id; await save("loan", l); } if(data.cashDates) data.cashDates.forEach(d=>cashDatesSet.add(d)); if(data.loanDates) data.loanDates.forEach(d=>loanDatesSet.add(d)); await loadAll(); showToast("✅ Restore सफल"); } catch(e) { alert("Invalid JSON"); } e.target.value = "";
     });
-
-    // Note Counting Popup Events
-    document.getElementById("noteCountingIcon").onclick = () => { renderNotePopup(); document.getElementById("noteModal").style.display = "flex"; };
-    document.getElementById("resetNotesBtn").onclick = () => { resetNoteFields(); };
-    document.getElementById("saveNotesBtn").onclick = async() => { await saveNotesToDB(); document.getElementById("noteModal").style.display = "none"; };
-    document.getElementById("closeNoteModalBtn").onclick = () => document.getElementById("noteModal").style.display = "none";
-
-    function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2000); }
-    async function loadAll(){
-        cashData = await getAll("cash"); loanData = await getAll("loan");
-        cashDatesSet = new Set([...cashData.map(c=>c.date), ...cashDatesSet]); 
-        loanDatesSet = new Set([...loanData.map(l=>l.date), ...loanDatesSet]);
-        updateTotals();
-        renderCashDates(); 
-        renderLoanDates();
-        if(selectedCashDate && cashDatesSet.has(selectedCashDate)) renderCashEntries(); 
-        else if(cashDatesSet.size) { selectedCashDate = Array.from(cashDatesSet)[0]; renderCashEntries(); renderCashDates(); }
-        if(selectedLoanDate && loanDatesSet.has(selectedLoanDate)) renderLoanEntries(); 
-        else if(loanDatesSet.size) { selectedLoanDate = Array.from(loanDatesSet)[0]; renderLoanEntries(); renderLoanDates(); }
+    
+    // ========== REMINDER ==========
+    function checkBackupReminder() {
+        let now = new Date();
+        let currentHour = now.getHours();
+        let currentDateStr = now.toDateString();
+        let lastReminder3PM = localStorage.getItem(`lastReminder3PM_${currentUser.id}`);
+        let lastReminder8PM = localStorage.getItem(`lastReminder8PM_${currentUser.id}`);
+        if(currentHour >= 15 && lastReminder3PM !== currentDateStr) {
+            showReminderPopup();
+            localStorage.setItem(`lastReminder3PM_${currentUser.id}`, currentDateStr);
+        } else if(currentHour >= 20 && lastReminder8PM !== currentDateStr) {
+            showReminderPopup();
+            localStorage.setItem(`lastReminder8PM_${currentUser.id}`, currentDateStr);
+        }
     }
+    function showReminderPopup() { let popup = document.getElementById("reminderPopup"); if(popup) popup.classList.remove("hide"); }
+    async function doJSONBackupAndClose() {
+        let data = await getAllData();
+        let jsonStr = JSON.stringify(data, null, 2);
+        let blob = new Blob([jsonStr], {type:"application/json"});
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `hindulion_backup_${currentUser.id}_${getTodayForFilename()}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        document.getElementById("reminderPopup").classList.add("hide");
+        showToast("📁 JSON Backup डाउनलोड हुआ");
+    }
+    if(document.getElementById("reminderBackupBtn")) 
+        document.getElementById("reminderBackupBtn").onclick = doJSONBackupAndClose;
+    
+    // ========== ADMIN FUNCTIONS ==========
+    function openAdminModal() {
+        if (currentUser.role !== 'admin') return;
+        renderAdminUsersList();
+        document.getElementById("adminModal").style.display = "flex";
+    }
+    function closeAdminModal() { document.getElementById("adminModal").style.display = "none"; }
+    
+    function renderAdminUsersList() {
+        let html = '<table style="width:100%; border-collapse: collapse; font-size: 11px;">';
+        html += '<thead><tr style="background:#27ae60; color:white;"><th style="padding:5px;">ID</th><th style="padding:5px;">Password</th><th style="padding:5px;">नाम</th><th style="padding:5px;">Expiry</th><th style="padding:5px;">Role</th></tr></thead><tbody>';
+        for (let [id, user] of Object.entries(githubUsers.users)) {
+            html += `<tr style="border-bottom:1px solid #ddd;">
+                        <td style="padding:5px;">${id}</td>
+                        <td style="padding:5px;">${user.password}</td>
+                        <td style="padding:5px;">${user.name}</td>
+                        <td style="padding:5px;">${user.expiry}</td>
+                        <td style="padding:5px;">${user.role === 'admin' ? '👑 एडमिन' : '👤 यूजर'}</td>
+                     </tr>`;
+        }
+        html += '</tbody></table>';
+        html += '<p style="font-size:10px; color:#e74c3c; margin-top:8px;">⚠️ यूजर जोड़ने/हटाने के लिए GitHub की users.json file एडिट करें।</p>';
+        document.getElementById("adminUsersList").innerHTML = html;
+    }
+    
+    function addNewUserFromAdmin() {
+        alert("⚠️ नया यूजर जोड़ने के लिए:\n\n1. GitHub पर जाएं\n2. users.json file खोलें\n3. नीचे दिए format में नया user add करें:\n\n{\n  \"newId\": {\n    \"password\": \"pass\",\n    \"role\": \"user\",\n    \"expiry\": \"2026-12-31\",\n    \"name\": \"नाम\"\n  }\n}\n\n4. Commit करें\n\nApp restart करने पर नया user active हो जाएगा।");
+    }
+    
+    // ========== LOGIN SYSTEM ==========
+    async function fetchUsersFromGitHub() {
+        try {
+            let response = await fetch(GITHUB_USERS_URL);
+            if (!response.ok) throw new Error("Network error");
+            let data = await response.json();
+            githubUsers = data;
+            localStorage.setItem("githubUsersCache", JSON.stringify({ data, timestamp: Date.now() }));
+            return data;
+        } catch (error) {
+            console.log("Fetch error, trying cache");
+            let cached = localStorage.getItem("githubUsersCache");
+            if (cached) {
+                let cacheData = JSON.parse(cached);
+                if (Date.now() - cacheData.timestamp < 86400000) { // 24 hours cache
+                    githubUsers = cacheData.data;
+                    return cacheData.data;
+                }
+            }
+            return null;
+        }
+    }
+    
+    async function checkLogin() {
+        let id = document.getElementById("loginId").value.trim();
+        let password = document.getElementById("loginPassword").value.trim();
+        
+        if (!id || !password) {
+            document.getElementById("loginError").innerText = "❌ ID और Password दोनों भरें!";
+            return;
+        }
+        
+        document.getElementById("loginLoading").innerText = "⏳ Verifying...";
+        document.getElementById("loginError").innerText = "";
+        
+        let usersData = await fetchUsersFromGitHub();
+        if (!usersData || !usersData.users) {
+            document.getElementById("loginError").innerText = "❌ Internet connection issue! Try again.";
+            document.getElementById("loginLoading").innerText = "";
+            return;
+        }
+        
+        let user = usersData.users[id];
+        if (!user || user.password !== password) {
+            document.getElementById("loginError").innerText = "❌ Invalid ID or Password!";
+            document.getElementById("loginLoading").innerText = "";
+            return;
+        }
+        
+        // Check expiry
+        let today = new Date().toISOString().slice(0,10);
+        if (user.expiry < today) {
+            document.getElementById("loginError").innerText = "❌ License Expired! Contact Admin.";
+            document.getElementById("loginLoading").innerText = "";
+            return;
+        }
+        
+        // Login success
+        currentUser = {
+            id: id,
+            name: user.name,
+            role: user.role,
+            expiry: user.expiry
+        };
+        
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("mainApp").classList.remove("hide-app");
+        
+        // Show/hide admin panel button
+        if (currentUser.role === 'admin') {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        } else {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+        }
+        
+        await openDB();
+        await loadAll();
+        await loadNotes();
+        checkBackupReminder();
+    }
+    
+    function checkSavedLogin() {
+        let saved = localStorage.getItem("currentUser");
+        if (saved) {
+            let user = JSON.parse(saved);
+            // Check expiry
+            let today = new Date().toISOString().slice(0,10);
+            if (user.expiry >= today) {
+                currentUser = user;
+                document.getElementById("loginOverlay").style.display = "none";
+                document.getElementById("mainApp").classList.remove("hide-app");
+                if (currentUser.role === 'admin') {
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+                } else {
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                }
+                openDB().then(() => {
+                    loadAll();
+                    loadNotes();
+                    checkBackupReminder();
+                });
+                return true;
+            } else {
+                localStorage.removeItem("currentUser");
+            }
+        }
+        return false;
+    }
+    
+    function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2000); }
+    
     window.onclick = e=>{ if(e.target.classList.contains("modal")) e.target.style.display="none"; };
     document.getElementById("tabCashBtn").onclick = ()=>{ currentActiveTab="cash"; document.getElementById("cashSection").style.display="block"; document.getElementById("loanSection").style.display="none"; document.getElementById("tabCashBtn").classList.add("active"); document.getElementById("tabLoanBtn").classList.remove("active"); };
     document.getElementById("tabLoanBtn").onclick = ()=>{ currentActiveTab="loan"; document.getElementById("cashSection").style.display="none"; document.getElementById("loanSection").style.display="block"; document.getElementById("tabLoanBtn").classList.add("active"); document.getElementById("tabCashBtn").classList.remove("active"); };
+    document.getElementById("openAdminBtn").onclick = () => openAdminModal();
+    document.getElementById("loginBtn").onclick = checkLogin;
+    document.getElementById("loginPassword").addEventListener("keypress", e => { if(e.key === 'Enter') checkLogin(); });
+    
     function escape(str){ return String(str||"").replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
-
-    // AUTH
-    function checkAuth(){
-        let done = localStorage.getItem("authDoneHinduLion");
-        if(done === "true"){
-            document.getElementById("authOverlay").style.display = "none";
-            document.getElementById("mainApp").classList.remove("hide-app");
-            openDB();
-        }
+    
+    // Auto check saved login
+    if (!checkSavedLogin()) {
+        // Show login screen
+        document.getElementById("loginOverlay").style.display = "flex";
+        document.getElementById("mainApp").classList.add("hide-app");
     }
-    document.getElementById("authSubmitBtn").onclick = () => {
-        let val = document.getElementById("authIdInput").value.trim();
-        if(val === "Rudra"){
-            localStorage.setItem("authDoneHinduLion","true");
-            document.getElementById("authOverlay").style.display = "none";
-            document.getElementById("mainApp").classList.remove("hide-app");
-            openDB();
-        } else { alert("Wrong ID! Access Denied."); }
-    };
-    checkAuth();
 </script>
 </body>
 </html>
