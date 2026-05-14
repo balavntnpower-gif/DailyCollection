@@ -6,17 +6,17 @@
       "expiry": "2026-12-31",
       "name": "रुद्र"
     },
-    "Kumar": {
-      "password": "kumar123",
+    "Prakash": {
+      "password": "Prakash@123",
       "role": "user",
       "expiry": "2026-07-15",
-      "name": "स्नेहा"
+      "name": "प्रकाश"
     },
-    "Raj": {
-      "password": "raj456",
+    "Omprakash": {
+      "password": "Om@123",
       "role": "user",
-      "expiry": "2026-06-30",
-      "name": "राज"
+      "expiry": "2026-08-31",
+      "name": "ओमप्रकाश"
     }
   }
 }
