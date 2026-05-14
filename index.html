@@ -41,6 +41,25 @@
         }
         .header h1 { font-size: 1.3rem; font-weight: 600; }
         .header p { font-size: 0.7rem; opacity: 0.9; }
+        
+        /* Expiry Badge - Right side */
+        .expiry-badge {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .expiry-badge.green { background: #27ae60; color: white; }
+        .expiry-badge.yellow { background: #f39c12; color: #1a1a2e; }
+        .expiry-badge.orange { background: #e67e22; color: white; }
+        .expiry-badge.red { background: #e74c3c; color: white; }
+        
         .tab-bar {
             display: flex;
             gap: 8px;
@@ -344,6 +363,7 @@
 <div class="container">
     <div class="header">
         <div class="coin-icon" id="noteCountingIcon">🪙</div>
+        <div id="expiryBadge" class="expiry-badge"></div>
         <h1><i class="fas fa-hand-holding-usd"></i> Daily Collection</h1>
         <p>Powered By | Hindu Lion Brothers</p>
     </div>
@@ -506,6 +526,35 @@
         return new Promise(r => tx.oncomplete = r);
     }
     
+    // ========== EXPIRY BADGE FUNCTION ==========
+    function updateExpiryBadge(expiryDate) {
+        let today = new Date();
+        let expiry = new Date(expiryDate);
+        today.setHours(0,0,0,0);
+        expiry.setHours(0,0,0,0);
+        
+        let diffTime = expiry - today;
+        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let badge = document.getElementById("expiryBadge");
+        if (diffDays <= 0) {
+            badge.innerHTML = "❌ Expired";
+            badge.className = "expiry-badge red";
+        } else if (diffDays <= 3) {
+            badge.innerHTML = `🚨 ${diffDays} दिन बाकी`;
+            badge.className = "expiry-badge red";
+        } else if (diffDays <= 7) {
+            badge.innerHTML = `🔴 ${diffDays} दिन बाकी`;
+            badge.className = "expiry-badge orange";
+        } else if (diffDays <= 15) {
+            badge.innerHTML = `⚠️ ${diffDays} दिन बाकी`;
+            badge.className = "expiry-badge yellow";
+        } else {
+            badge.innerHTML = `✅ ${diffDays} दिन बाकी`;
+            badge.className = "expiry-badge green";
+        }
+    }
+    
     // ========== LOAD DATA (USER WISE) ==========
     async function loadAll() {
         let allCash = await getAll("cash");
@@ -654,12 +703,16 @@
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
-                <td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${periodText}</td><td>${dailyText}</td><td>${l.date}</td>
+                <td>₹${formatAmount(l.loanAmount)}</td>
+                <td>${returnText}</td>
+                <td>${periodText}</td>
+                <td>${dailyText}</td>
+                <td>${l.date}</td>
                 <td>${escape(l.remark || '')}</td>
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody><tr><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
@@ -858,7 +911,7 @@
                         <td style="padding:5px;">${user.name}</td>
                         <td style="padding:5px;">${user.expiry}</td>
                         <td style="padding:5px;">${user.role === 'admin' ? '👑 एडमिन' : '👤 यूजर'}</td>
-                     </tr>`;
+                      </tr>`;
         }
         html += '</tbody></table>';
         html += '<p style="font-size:10px; color:#e74c3c; margin-top:8px;">⚠️ यूजर जोड़ने/हटाने के लिए GitHub की users.json file एडिट करें।</p>';
@@ -883,7 +936,7 @@
             let cached = localStorage.getItem("githubUsersCache");
             if (cached) {
                 let cacheData = JSON.parse(cached);
-                if (Date.now() - cacheData.timestamp < 86400000) { // 24 hours cache
+                if (Date.now() - cacheData.timestamp < 86400000) {
                     githubUsers = cacheData.data;
                     return cacheData.data;
                 }
@@ -939,6 +992,9 @@
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("mainApp").classList.remove("hide-app");
         
+        // Update expiry badge
+        updateExpiryBadge(currentUser.expiry);
+        
         // Show/hide admin panel button
         if (currentUser.role === 'admin') {
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
@@ -956,12 +1012,15 @@
         let saved = localStorage.getItem("currentUser");
         if (saved) {
             let user = JSON.parse(saved);
-            // Check expiry
             let today = new Date().toISOString().slice(0,10);
             if (user.expiry >= today) {
                 currentUser = user;
                 document.getElementById("loginOverlay").style.display = "none";
                 document.getElementById("mainApp").classList.remove("hide-app");
+                
+                // Update expiry badge
+                updateExpiryBadge(currentUser.expiry);
+                
                 if (currentUser.role === 'admin') {
                     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
                 } else {
@@ -993,7 +1052,6 @@
     
     // Auto check saved login
     if (!checkSavedLogin()) {
-        // Show login screen
         document.getElementById("loginOverlay").style.display = "flex";
         document.getElementById("mainApp").classList.add("hide-app");
     }
