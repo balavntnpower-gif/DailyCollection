@@ -42,7 +42,6 @@
         .header h1 { font-size: 1.3rem; font-weight: 600; }
         .header p { font-size: 0.7rem; opacity: 0.9; }
         
-        /* Expiry Badge */
         .expiry-badge {
             position: absolute;
             right: 16px;
@@ -211,7 +210,10 @@
             text-align: center;
             margin-bottom: 10px;
         }
-        .form-group { margin-bottom: 6px; }
+        .form-group {
+            margin-bottom: 6px;
+            position: relative;
+        }
         .form-group input, .form-group select {
             width: 100%;
             padding: 8px 12px;
@@ -220,6 +222,30 @@
             font-size: 0.8rem;
             background: white;
         }
+        
+        /* Suggestion box styles */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 16px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .suggestion-item:hover {
+            background: #f0f0f0;
+        }
+        
         .modal-buttons { display: flex; justify-content: center; margin-top: 12px; margin-bottom: 6px; }
         .btn-save {
             background: #0f6b3a;
@@ -414,7 +440,10 @@
         <h3 style="text-align:center;">नई प्रविष्टि</h3>
         <form id="cashForm">
             <input type="hidden" id="cashId">
-            <div class="form-group"><input id="cashName" placeholder="नाम" required></div>
+            <div class="form-group" style="position: relative;">
+                <input id="cashName" placeholder="नाम" required autocomplete="off">
+                <div id="cashNameSuggestions" class="suggestions-box" style="display: none;"></div>
+            </div>
             <div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div>
             <div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
             <div class="form-group"><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div>
@@ -430,7 +459,10 @@
         <h3 style="text-align:center;">नया लोन</h3>
         <form id="loanForm">
             <input type="hidden" id="loanId">
-            <div class="form-group"><input id="loanName" placeholder="नाम" required></div>
+            <div class="form-group" style="position: relative;">
+                <input id="loanName" placeholder="नाम" required autocomplete="off">
+                <div id="loanNameSuggestions" class="suggestions-box" style="display: none;"></div>
+            </div>
             <div class="form-group"><input id="loanAddress" placeholder="पता" required></div>
             <div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div>
             <div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
@@ -457,7 +489,7 @@
 </div>
 
 <script>
-    // ========== GITHUB CONFIGURATION - CORS FREE URL ==========
+    // ========== GITHUB CONFIGURATION ==========
     const GITHUB_USERS_URL = "https://balavntnpower-gif.github.io/DailyCollection/users.json";
     
     let db;
@@ -472,6 +504,49 @@
     let reminderVisible = false;
     let pendingReminderTime = null;
 
+    // ========== NAME SUGGESTION FUNCTIONS ==========
+    function getAllUniqueNames() {
+        let namesSet = new Set();
+        cashData.forEach(c => { if(c.name && c.name.trim()) namesSet.add(c.name.trim()); });
+        loanData.forEach(l => { if(l.name && l.name.trim()) namesSet.add(l.name.trim()); });
+        return Array.from(namesSet).sort();
+    }
+    
+    function attachNameSuggestion(inputElement, suggestionsContainerId) {
+        let suggestionsBox = document.getElementById(suggestionsContainerId);
+        if (!suggestionsBox) return;
+        
+        inputElement.addEventListener("input", function() {
+            let inputValue = this.value.trim().toLowerCase();
+            if (!inputValue) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+            let allNames = getAllUniqueNames();
+            let matched = allNames.filter(name => name.toLowerCase().includes(inputValue));
+            if (matched.length === 0) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+            suggestionsBox.innerHTML = "";
+            matched.forEach(name => {
+                let div = document.createElement("div");
+                div.className = "suggestion-item";
+                div.textContent = name;
+                div.onclick = () => {
+                    inputElement.value = name;
+                    suggestionsBox.style.display = "none";
+                };
+                suggestionsBox.appendChild(div);
+            });
+            suggestionsBox.style.display = "block";
+        });
+        
+        inputElement.addEventListener("blur", () => {
+            setTimeout(() => { suggestionsBox.style.display = "none"; }, 200);
+        });
+    }
+    
     // ========== INDEXED DB FUNCTIONS ==========
     function openDB() {
         return new Promise((resolve, reject) => {
@@ -592,7 +667,7 @@
         }
         let html = `<table><thead><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td>`; });
-        html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectCashDate(date) { selectedCashDate = date; renderCashDates(); renderCashEntries(); }
@@ -672,21 +747,17 @@
             container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं <button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ नया लोन</button></div>`;
             container.classList.add("show"); return;
         }
-        // नया कॉलम जोड़ा गया है: प्रति दिन
         let html = `<table><thead><th>नाम/पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन (₹)</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th></th></thead><tbody>`;
         entries.forEach(l => { 
             let {ret, daily} = calcReturnAndDaily(l); 
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
-            
-            // प्रति दिन वैल्यू तय करो
             let perDayText = "";
             if (l.period === 'month') {
                 perDayText = "—";
             } else {
                 perDayText = `₹${formatAmount(daily)}`;
             }
-            
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
                 <td>₹${formatAmount(l.loanAmount)}</td>
@@ -698,7 +769,7 @@
                 <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
             </tr>`;
         });
-        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
@@ -916,7 +987,7 @@
             return;
         }
         
-        // ===== HARDCODED ADMIN =====
+        // HARDCODED ADMIN
         if (id.toLowerCase() === 'hindu' && password === 'Lion') {
             currentUser = { id: 'hindu', name: 'हिंदू', role: 'admin', expiry: null };
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -930,7 +1001,7 @@
             return;
         }
         
-        // ===== GITHUB USERS CHECK =====
+        // GITHUB USERS CHECK
         document.getElementById("loginLoading").innerText = "⏳ Verifying...";
         document.getElementById("loginError").innerText = "";
         
@@ -993,6 +1064,22 @@
         }
         return false;
     }
+    
+    // Setup name suggestions after data is loaded
+    function setupNameSuggestions() {
+        let cashNameInput = document.getElementById("cashName");
+        let loanNameInput = document.getElementById("loanName");
+        if (cashNameInput) attachNameSuggestion(cashNameInput, "cashNameSuggestions");
+        if (loanNameInput) attachNameSuggestion(loanNameInput, "loanNameSuggestions");
+    }
+    
+    // Override loadAll to setup suggestions after data loads
+    const originalLoadAll = loadAll;
+    window.loadAll = async function() {
+        await originalLoadAll();
+        setupNameSuggestions();
+    };
+    loadAll = window.loadAll;
     
     function showToast(msg){ let t=document.createElement("div"); t.className="toast"; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2000); }
     
