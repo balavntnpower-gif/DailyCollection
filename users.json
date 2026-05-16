@@ -17,6 +17,12 @@
       "role": "user",
       "expiry": "2026-08-31",
       "name": "ओमप्रकाश"
+    },
+    "ChandanSingh": {
+      "password": "Chandan",
+      "role": "user",
+      "expiry": "2026-05-30",
+      "name": "चंदन सिंह"
     }
   }
 }
