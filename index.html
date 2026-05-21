@@ -220,7 +220,7 @@
 </div>
 
 <script>
-    // ========== SUPABASE CONFIGURATION (UPDATED FOR NEW PROJECT) ==========
+    // ========== SUPABASE CONFIGURATION (UPDATED - NEW PROJECT) ==========
     const SUPABASE_URL = "https://rybouhjcxfjnilsunihd.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5Ym91aGpjeGZqbmlsc3VuaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMzY1NzQsImV4cCI6MjA5NDkxMjU3NH0.SXqopYeLqvukHZkBo2tmhI4o6f-lJYCxn2Tbud3_nms";
     
@@ -260,6 +260,7 @@
     async function syncToSupabase(table, data) {
         if (!supabaseClient || !currentUser) return false;
         try {
+            console.log(`Saving to ${table}:`, data);
             const { error } = await supabaseClient.from(table).upsert(data, { onConflict: 'id' });
             if (error) {
                 console.error(`Error saving to ${table}:`, error);
@@ -268,6 +269,7 @@
                 return false;
             }
             console.log(`✅ Saved to ${table}:`, data.id);
+            updateSyncStatus('synced', '✅');
             return true;
         } catch(err) { 
             console.error(err);
@@ -298,11 +300,13 @@
             
             if (cashError) {
                 console.error("Cash fetch error:", cashError);
+                showToast("❌ Cash fetch failed: " + cashError.message);
             } else if (cashDataDB && cashDataDB.length) {
                 console.log(`Found ${cashDataDB.length} cash records`);
                 for (let c of cashDataDB) {
                     await saveToIndexedDBOnly("cash", c);
                 }
+                showToast(`✅ Downloaded ${cashDataDB.length} cash records`);
             }
             
             // Fetch loan data
@@ -339,7 +343,7 @@
         } catch(err) {
             console.error("Supabase sync error:", err);
             updateSyncStatus('error', '❌');
-            showToast("❌ Sync failed!");
+            showToast("❌ Sync failed: " + err.message);
             return false;
         }
     }
@@ -411,6 +415,7 @@
         tx.objectStore(store).put(item);
         await new Promise(r => tx.oncomplete = r);
         
+        // Sync to Supabase if online
         if (navigator.onLine && supabaseClient && currentUser) {
             let table = store === 'cash' ? 'daily_cash' : (store === 'loan' ? 'daily_loan' : 'daily_notes');
             await syncToSupabase(table, item);
@@ -539,7 +544,7 @@
         }
         let html = `<table><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th></th></tr></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td>`; });
-        html += `</tbody></tr><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -633,8 +638,9 @@
             let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; 
             let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`;
             let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`;
-            html += `<tr><td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td><td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${perDayText}</td><td>${periodText}</td><td>${l.date}</td><td>${escape(l.remark || '')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>`; });
-        html += `</tbody></td><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+            html += `<tr><td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td><td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${perDayText}</td><td>${periodText}</td><td>${l.date}</td><td>${escape(l.remark || '')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -726,11 +732,6 @@
     };
     
     // ========== DATE RANGE EXCEL BACKUP ==========
-    function parseDateString(dateStr) {
-        let parts = dateStr.split('-');
-        return new Date(parts[0], parts[1]-1, parts[2]);
-    }
-    
     function formatDateForCompare(dateStr) {
         let parts = dateStr.split('/');
         return `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -899,7 +900,7 @@
     }
     if(document.getElementById("reminderBackupBtn")) document.getElementById("reminderBackupBtn").onclick = doJSONBackupAndClose;
     
-    // ========== LOGIN SYSTEM (GitHub based) ==========
+    // ========== LOGIN SYSTEM (GitHub based - same as before) ==========
     async function fetchUsersFromGitHub() {
         document.getElementById("networkStatus").innerText = "🔄 Connecting...";
         try {
@@ -932,6 +933,7 @@
             return;
         }
         
+        // Hardcoded admin
         if (id.toLowerCase() === 'hindu' && password === 'Lion') {
             currentUser = { id: 'hindu', name: 'हिंदू', role: 'admin', expiry: null };
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
