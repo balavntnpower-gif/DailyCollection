@@ -11,8 +11,89 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background: #eef2f5; font-family: 'Segoe UI', sans-serif; padding: 10px; font-size: 13px; }
         .container { max-width: 600px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #0f6b3a, #0a4f2c); color: white; border-radius: 20px; padding: 14px; text-align: center; margin-bottom: 15px; position: relative; }
-        .coin-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; }
+        .header { background: linear-gradient(135deg, #0f6b3a, #0a4f2c); color: white; border-radius: 20px; padding: 14px; text-align: center; margin-bottom: 15px; position: relative; min-height: 80px; }
+        
+        /* 10 Rupee Coin Styles - Dashboard Icon */
+        .coin-dashboard-wrapper {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .coin-dashboard-wrapper .coin-outer {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #c9982e, #f5d76e, #c9982e, #e8c547, #b8860b,
+                #f5d76e, #c9982e, #e8c547, #b8860b, #f5d76e,
+                #c9982e, #e8c547, #b8860b, #c9982e
+            );
+            box-shadow: 0 0 0 2px #a07618, 0 4px 10px rgba(0,0,0,0.3), inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .coin-dashboard-wrapper .coin-outer::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            background: repeating-conic-gradient(#d4a830 0deg 3deg, #b8860b 3deg 6deg);
+            mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%);
+            -webkit-mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%);
+        }
+        
+        .coin-dashboard-wrapper .coin-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 38% 35%, #f0f0f0 0%, #d9d9d9 25%, #c0c0c0 50%, #a8a8a8 75%, #909090 100%);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.25), 0 0 0 1px #a07618;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .coin-dashboard-wrapper .rupee-symbol {
+            font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #3a3a3a;
+            line-height: 1;
+            text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.4), -0.3px -0.3px 0 rgba(0,0,0,0.15);
+        }
+        
+        .coin-dashboard-wrapper .coin-value {
+            font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            color: #4a4a4a;
+            line-height: 1;
+            text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.3);
+        }
+        
+        .coin-dashboard-wrapper .coin-shine {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 25%, transparent 50%);
+            pointer-events: none;
+        }
+        
         .sync-status { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 10px; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 20px; }
         .sync-status.synced { background: #27ae60; }
         .sync-status.pending { background: #f39c12; }
@@ -20,20 +101,17 @@
         .header h1 { font-size: 1.3rem; font-weight: 600; }
         .header p { font-size: 0.7rem; opacity: 0.9; }
         .expiry-badge { position: absolute; right: 16px; top: 8px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: bold; }
-        .expiry-badge.green { background: #27ae60; }
-        .expiry-badge.yellow { background: #f39c12; color: #1a1a2e; }
-        .expiry-badge.orange { background: #e67e22; }
-        .expiry-badge.red { background: #e74c3c; }
         .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: white; border: none; padding: 10px 0; border-radius: 40px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
         .tab-btn.active { background: #0f6b3a; color: white; }
         .loan-tab { background: #dc2626; color: white; }
         .loan-tab.active { background: #b91c1c; }
-        .summary-row { display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 20px; padding: 8px 16px; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 20px; padding: 8px 16px; margin-bottom: 15px; flex-wrap: wrap; gap: 8px; }
         .cash-total { font-weight: 700; color: #0f6b3a; font-size: 1rem; }
         .loan-total { font-weight: 700; color: #dc2626; font-size: 1rem; }
         .create-btn-center { background: #0f6b3a; color: white; border: none; padding: 6px 18px; border-radius: 40px; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .refresh-btn { background: #3498db; color: white; border: none; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; margin-left: 5px; }
+        .hard-refresh-btn { background: #e74c3c; color: white; border: none; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; margin-left: 5px; }
         .backup-bar { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
         .backup-btn, .restore-btn, .range-backup-btn { background: white; border: none; padding: 6px 12px; border-radius: 40px; font-weight: bold; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .range-backup-btn { background: #e67e22; color: white; }
@@ -54,24 +132,35 @@
         .btn-icon:hover { background: #eef2f5; }
         .add-btn { background: #0f6b3a; color: white; border: none; padding: 10px; border-radius: 40px; margin-top: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.8rem; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: flex-start; justify-content: center; z-index: 1000; overflow-y: auto; }
-        .modal-card { background: white; width: 92%; max-width: 350px; border-radius: 24px; padding: 15px; margin-top: 8vh; margin-bottom: 20px; }
+        .modal-card { background: white; width: 92%; max-width: 400px; border-radius: 24px; padding: 15px; margin-top: 8vh; margin-bottom: 20px; }
         .modal-card h3 { font-size: 1.1rem; text-align: center; margin-bottom: 15px; color: #0f6b3a; }
         .form-group { margin-bottom: 12px; position: relative; }
         .form-group input, .form-group select { width: 100%; padding: 10px 14px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.85rem; background: white; }
         .date-range-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .date-range-group input { flex: 1; padding: 10px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.8rem; }
-        .suggestions-box { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 16px; max-height: 150px; overflow-y: auto; z-index: 1100; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .suggestion-item { padding: 10px 14px; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid #eee; }
-        .suggestion-item:hover { background: #e8f5e9; }
         .modal-buttons { display: flex; justify-content: center; margin-top: 15px; gap: 10px; flex-wrap: wrap; }
         .btn-save { background: #0f6b3a; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
         .btn-cancel { background: #95a5a6; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
-        .note-grid { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
-        .note-row { display: grid; grid-template-columns: 50px 60px 70px; align-items: center; gap: 8px; }
-        .note-label { font-weight: 600; font-size: 0.9rem; color: #333; }
-        .note-input { width: 60px; padding: 8px 5px; border-radius: 16px; border: 1px solid #ccc; text-align: center; font-size: 0.8rem; }
-        .note-value { text-align: right; font-weight: 600; color: #0f6b3a; font-size: 0.85rem; }
-        .total-row { text-align: center; font-size: 1rem; font-weight: bold; margin: 10px 0; padding: 8px; background: #eef2fa; border-radius: 20px; }
+        
+        /* Note Counting Styles */
+        .note-grid { display: flex; flex-direction: column; gap: 12px; margin: 15px 0; max-height: 60vh; overflow-y: auto; padding: 5px; }
+        .note-row { display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 10px 12px; border-radius: 16px; transition: all 0.2s; }
+        .note-row:hover { background: #e8f5e9; transform: scale(1.01); }
+        .note-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ffd700, #ffb300); border-radius: 50%; font-size: 1.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .note-icon.coin-10 { background: linear-gradient(135deg, #cd7f32, #b87333); }
+        .note-icon.coin-5 { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+        .note-details { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+        .note-label { font-weight: 700; font-size: 1rem; min-width: 55px; color: #333; }
+        .note-input { width: 80px; padding: 10px 8px; border-radius: 12px; border: 2px solid #ddd; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+        .note-input:focus { outline: none; border-color: #0f6b3a; box-shadow: 0 0 0 3px rgba(15,107,58,0.1); }
+        .note-value { font-weight: 700; font-size: 0.95rem; color: #0f6b3a; min-width: 80px; text-align: right; background: white; padding: 6px 12px; border-radius: 20px; }
+        .total-row { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 15px 0; padding: 12px; background: linear-gradient(135deg, #0f6b3a, #0a4f2c); color: white; border-radius: 20px; }
+        .note-modal-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 15px; }
+        .note-modal-buttons button { padding: 10px 20px; border-radius: 40px; font-weight: bold; cursor: pointer; border: none; font-size: 0.85rem; }
+        .note-modal-buttons button:first-child { background: #e74c3c; color: white; }
+        .note-modal-buttons button:nth-child(2) { background: #0f6b3a; color: white; }
+        .note-modal-buttons button:last-child { background: #95a5a6; color: white; }
+        
         .reminder-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 2500; text-align: center; padding: 25px; width: 85%; max-width: 320px; border: 2px solid #0f6b3a; }
         .reminder-popup.hide { display: none; }
         .reminder-btn { background: #0f6b3a; color: white; border: none; padding: 12px 20px; border-radius: 40px; margin-top: 15px; font-weight: bold; cursor: pointer; width: 100%; }
@@ -84,14 +173,18 @@
         .login-error { color: red; font-size: 12px; margin-top: 10px; }
         .login-loading { color: #0f6b3a; font-size: 12px; margin-top: 10px; }
         .network-status { font-size: 10px; margin-top: 8px; color: #888; }
-        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.75rem; z-index: 1200; }
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.75rem; z-index: 1200; animation: fadeInOut 2s ease-in-out; }
         .hide-app { display: none; }
-        
-        /* Loan entries ke liye better alignment */
         .loan-name-cell { font-weight: 600; }
         .loan-address-cell { font-size: 0.65rem; color: #666; margin-top: 2px; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
     </style>
 </head>
 <body>
@@ -113,7 +206,14 @@
 <div id="mainApp" class="hide-app">
 <div class="container">
     <div class="header">
-        <div class="coin-icon" id="noteCountingIcon">🪙</div>
+        <div class="coin-dashboard-wrapper" id="noteCountingIcon">
+            <div class="coin-outer"></div>
+            <div class="coin-inner">
+                <span class="rupee-symbol">₹</span>
+                <span class="coin-value">10</span>
+            </div>
+            <div class="coin-shine"></div>
+        </div>
         <div id="expiryBadge" class="expiry-badge"></div>
         <div id="syncStatus" class="sync-status">🔄</div>
         <h1>Daily Collection</h1>
@@ -129,6 +229,7 @@
         <span class="cash-total" id="cashTotalAmount">₹0</span>
         <button class="create-btn-center" id="createDateBtn"><i class="fas fa-calendar-plus"></i> Create Date</button>
         <button class="refresh-btn" id="refreshDataBtn"><i class="fas fa-sync-alt"></i> Sync</button>
+        <button class="hard-refresh-btn" id="hardRefreshBtn"><i class="fas fa-database"></i> Hard Sync</button>
         <span class="loan-total" id="loanTotalAmount">₹0</span>
     </div>
 
@@ -156,7 +257,20 @@
 <div id="reminderPopup" class="reminder-popup hide"><i class="fas fa-bell" style="font-size:2rem;"></i><h3>Backup Reminder</h3><p>कृपया अभी JSON Backup लें।</p><button id="reminderBackupBtn" class="reminder-btn">JSON Backup Now</button></div>
 <div id="cashModal" class="modal"><div class="modal-card"><h3>नई प्रविष्टि</h3><form id="cashForm"><input type="hidden" id="cashId"><div class="form-group"><input id="cashName" placeholder="नाम" required></div><div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div><div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div><div class="form-group"><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div><div class="form-group"><input id="cashRemark" placeholder="Remark (optional)"></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
 <div id="loanModal" class="modal"><div class="modal-card"><h3>नया लोन</h3><form id="loanForm"><input type="hidden" id="loanId"><div class="form-group"><input id="loanName" placeholder="नाम" required></div><div class="form-group"><input id="loanAddress" placeholder="पता" required></div><div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div><div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div><div class="form-group"><select id="loanPeriod"><option value="month">Month (%)</option><option value="60">60 दिन</option><option value="80">80 दिन</option><option value="100">100 दिन</option><option value="120">120 दिन</option></select></div><div id="percentDiv"><div class="form-group"><input type="number" id="interestPercent" placeholder="ब्याज (%)" value="10"></div></div><div class="form-group"><input id="loanRemark" placeholder="Remark (optional)"></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
-<div id="noteModal" class="modal"><div class="modal-card"><h3>Note Counting</h3><div class="total-row">💰 Total: ₹<span id="noteTotal">0</span></div><div class="note-grid" id="noteGrid"></div><div class="modal-buttons"><button id="resetNotesBtn">Reset</button><button id="saveNotesBtn">सेव करें</button><button id="closeNoteModalBtn">बंद करें</button></div></div></div>
+
+<!-- Note Counting Modal -->
+<div id="noteModal" class="modal">
+    <div class="modal-card">
+        <h3><i class="fas fa-coins"></i> नोट/सिक्का गणना</h3>
+        <div class="total-row">💰 कुल राशि: ₹<span id="noteTotal">0</span></div>
+        <div class="note-grid" id="noteGrid"></div>
+        <div class="note-modal-buttons">
+            <button id="resetNotesBtn"><i class="fas fa-undo-alt"></i> रीसेट</button>
+            <button id="saveNotesBtn"><i class="fas fa-save"></i> सेव करें</button>
+            <button id="closeNoteModalBtn"><i class="fas fa-times"></i> बंद करें</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const SUPABASE_URL = "https://rybouhjcxfjnilsunihd.supabase.co";
@@ -173,42 +287,23 @@
     let currentUser = null;
     const GITHUB_USERS_URL = "https://balavntnpower-gif.github.io/DailyCollection/users.json";
     
+    function showToast(msg) { 
+        let t=document.createElement('div'); 
+        t.className='toast'; 
+        t.innerText=msg; 
+        document.body.appendChild(t); 
+        setTimeout(()=>t.remove(),2500);
+    }
+    
     function initSupabase() {
         if (typeof supabase === 'undefined') { setTimeout(initSupabase, 500); return; }
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log("Supabase initialized");
-        updateSyncStatus('synced', '✅');
     }
     
     function updateSyncStatus(status, msg) {
         let el = document.getElementById('syncStatus');
         if(el) { el.className = 'sync-status ' + status; el.innerHTML = msg || (status==='synced'?'✅':status==='pending'?'⏳':'❌'); }
-    }
-    
-    function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2000); }
-    
-    async function save(store, item) {
-        if (!item.id) { item.id = Date.now(); }
-        let tx = db.transaction(store, "readwrite");
-        tx.objectStore(store).put(item);
-        await new Promise(r => tx.oncomplete = r);
-        
-        if(navigator.onLine && supabaseClient && currentUser) {
-            try {
-                let table = store === 'cash' ? 'daily_cash' : (store === 'loan' ? 'daily_loan' : 'daily_notes');
-                let supItem = {};
-                if(store === 'cash') {
-                    supItem = { id: item.id, name: item.name, amount: item.amount, date: item.date, mode: item.mode || 'Cash', remark: item.remark || '', userid: item.userId || currentUser.id, username: item.userName || currentUser.name };
-                } else if(store === 'loan') {
-                    supItem = { id: item.id, name: item.name, address: item.address || '', loanamount: item.loanAmount, date: item.date, period: item.period, interest: item.interest || null, remark: item.remark || '', userid: item.userId || currentUser.id, username: item.userName || currentUser.name };
-                } else {
-                    supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
-                }
-                const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
-                if(error) { console.error("Save error:", error); showToast("Save failed: " + error.message); updateSyncStatus('error','❌'); }
-                else { console.log("Saved successfully"); showToast("Saved to cloud"); updateSyncStatus('synced','✅'); }
-            } catch(e) { console.error(e); }
-        }
     }
     
     async function saveToIndexedDBOnly(store, item) {
@@ -218,48 +313,191 @@
     }
     
     async function del(store, id) {
+        if(navigator.onLine && supabaseClient && currentUser) {
+            updateSyncStatus('pending','⏳');
+            try {
+                let table = store === 'cash' ? 'daily_cash' : 'daily_loan';
+                const { error } = await supabaseClient.from(table).delete().eq('id', id);
+                if(error) throw error;
+                console.log("Deleted from cloud successfully");
+            } catch(e) { 
+                console.error("Cloud delete error:", e);
+                showToast("❌ Cloud delete failed: " + e.message);
+                updateSyncStatus('error','❌');
+                return;
+            }
+        }
+        
         let tx = db.transaction(store, "readwrite");
         tx.objectStore(store).delete(id);
         await new Promise(r => tx.oncomplete = r);
+        showToast("✅ Deleted successfully");
+        updateSyncStatus('synced','✅');
+        await loadAll();
+    }
+    
+    async function save(store, item) {
+        if (!item.id) { item.id = Date.now(); }
+        
+        let tx = db.transaction(store, "readwrite");
+        tx.objectStore(store).put(item);
+        await new Promise(r => tx.oncomplete = r);
+        
         if(navigator.onLine && supabaseClient && currentUser) {
-            let table = store === 'cash' ? 'daily_cash' : (store === 'loan' ? 'daily_loan' : 'daily_notes');
-            await supabaseClient.from(table).delete().eq('id', id);
+            updateSyncStatus('pending','⏳');
+            try {
+                let table = store === 'cash' ? 'daily_cash' : (store === 'loan' ? 'daily_loan' : 'daily_notes');
+                let supItem = {};
+                
+                if(store === 'cash') {
+                    supItem = { 
+                        id: item.id, 
+                        name: item.name, 
+                        amount: item.amount, 
+                        date: item.date, 
+                        mode: item.mode || 'Cash', 
+                        remark: item.remark || '', 
+                        userid: item.userId || currentUser.id, 
+                        username: item.userName || currentUser.name 
+                    };
+                } else if(store === 'loan') {
+                    supItem = { 
+                        id: item.id, 
+                        name: item.name, 
+                        address: item.address || '', 
+                        loanamount: item.loanAmount, 
+                        date: item.date, 
+                        period: item.period, 
+                        interest: item.interest || null, 
+                        remark: item.remark || '', 
+                        userid: item.userId || currentUser.id, 
+                        username: item.userName || currentUser.name 
+                    };
+                } else {
+                    supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
+                }
+                
+                const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
+                if(error) { 
+                    console.error("Save error:", error); 
+                    showToast("⚠️ Saved locally only");
+                    updateSyncStatus('error','❌');
+                } else { 
+                    console.log("Saved to cloud successfully"); 
+                    showToast("✅ Saved to cloud");
+                    updateSyncStatus('synced','✅');
+                }
+            } catch(e) { 
+                console.error(e);
+                updateSyncStatus('error','❌');
+            }
+        } else {
+            showToast("📱 Offline mode - saved locally");
+            updateSyncStatus('pending','⏳');
         }
     }
     
-    async function getAll(store) {
-        return new Promise(r => { let tx = db.transaction(store, "readonly"); tx.objectStore(store).getAll().onsuccess = e => r(e.target.result || []); });
-    }
-    
-    async function syncFromSupabase() {
+    async function syncFromSupabase(forceRefresh = false) {
         if(!supabaseClient || !currentUser) return false;
         updateSyncStatus('pending','⏳');
-        showToast("Syncing from cloud...");
+        showToast("🔄 Syncing from cloud...");
+        
         try {
-            const { data: cashDB, error: cashErr } = await supabaseClient.from('daily_cash').select('*').eq('userid', currentUser.id);
+            if(forceRefresh && db) {
+                let tx = db.transaction(["cash", "loan"], "readwrite");
+                tx.objectStore("cash").clear();
+                tx.objectStore("loan").clear();
+                await new Promise(r => tx.oncomplete = r);
+                console.log("Local data cleared");
+            }
+            
+            const { data: cashDB, error: cashErr } = await supabaseClient
+                .from('daily_cash')
+                .select('*')
+                .eq('userid', currentUser.id);
+                
             if(cashErr) console.error("Cash error:", cashErr);
-            else if(cashDB && cashDB.length) { for(let c of cashDB) { await saveToIndexedDBOnly("cash", { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode, remark: c.remark||'', userId: c.userid, userName: c.username }); } showToast(`Downloaded ${cashDB.length} cash records`); }
+            else if(cashDB && cashDB.length) {
+                for(let c of cashDB) {
+                    await saveToIndexedDBOnly("cash", { 
+                        id: c.id, 
+                        name: c.name, 
+                        amount: c.amount, 
+                        date: c.date, 
+                        mode: c.mode, 
+                        remark: c.remark||'', 
+                        userId: c.userid, 
+                        userName: c.username 
+                    });
+                }
+                showToast(`📥 Downloaded ${cashDB.length} cash records`);
+            }
             
-            const { data: loanDB, error: loanErr } = await supabaseClient.from('daily_loan').select('*').eq('userid', currentUser.id);
+            const { data: loanDB, error: loanErr } = await supabaseClient
+                .from('daily_loan')
+                .select('*')
+                .eq('userid', currentUser.id);
+                
             if(loanErr) console.error("Loan error:", loanErr);
-            else if(loanDB && loanDB.length) { for(let l of loanDB) { await saveToIndexedDBOnly("loan", { id: l.id, name: l.name, address: l.address||'', loanAmount: l.loanamount, date: l.date, period: l.period, interest: l.interest, remark: l.remark||'', userId: l.userid, userName: l.username }); } }
+            else if(loanDB && loanDB.length) {
+                for(let l of loanDB) {
+                    await saveToIndexedDBOnly("loan", { 
+                        id: l.id, 
+                        name: l.name, 
+                        address: l.address||'', 
+                        loanAmount: l.loanamount, 
+                        date: l.date, 
+                        period: l.period, 
+                        interest: l.interest, 
+                        remark: l.remark||'', 
+                        userId: l.userid, 
+                        userName: l.username 
+                    });
+                }
+            }
             
-            const { data: notesDB } = await supabaseClient.from('daily_notes').select('*').eq('userid', currentUser.id).maybeSingle();
-            if(notesDB) { noteCounts = notesDB.counts; await saveToIndexedDBOnly("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); }
+            const { data: notesDB } = await supabaseClient
+                .from('daily_notes')
+                .select('*')
+                .eq('userid', currentUser.id)
+                .maybeSingle();
+                
+            if(notesDB) {
+                noteCounts = notesDB.counts;
+                await saveToIndexedDBOnly("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts });
+            }
             
             await loadAll();
             updateSyncStatus('synced','✅');
-            showToast("Sync complete");
+            showToast("✅ Sync complete");
             return true;
-        } catch(e) { console.error(e); updateSyncStatus('error','❌'); showToast("Sync failed"); return false; }
+            
+        } catch(e) { 
+            console.error(e); 
+            updateSyncStatus('error','❌'); 
+            showToast("❌ Sync failed");
+            return false;
+        }
     }
     
     function openDB() {
         return new Promise((resolve, reject) => {
-            let req = indexedDB.open("HinduLionDailyCollectionDB", 2);
-            req.onupgradeneeded = e => { let db = e.target.result; if(!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id", autoIncrement:true}); if(!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id", autoIncrement:true}); if(!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"}); };
+            let req = indexedDB.open("HinduLionDailyCollectionDB", 3);
+            req.onupgradeneeded = e => { 
+                let db = e.target.result; 
+                if(!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id"});
+                if(!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id"});
+                if(!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"});
+            };
             req.onsuccess = e => { db = e.target.result; resolve(db); };
             req.onerror = e => reject(e);
+        });
+    }
+    
+    async function getAll(store) {
+        return new Promise(r => { 
+            let tx = db.transaction(store, "readonly"); 
+            tx.objectStore(store).getAll().onsuccess = e => r(e.target.result || []); 
         });
     }
     
@@ -296,16 +534,28 @@
         renderCashDates();
         renderLoanDates();
         let today = getToday();
+        
+        // Set default selection to current date
         if(currentActiveTab === "cash") {
-            if(selectedCashDate && cashDatesSet.has(selectedCashDate)) renderCashEntries();
-            else if(cashDatesSet.has(today)) { selectedCashDate = today; renderCashEntries(); renderCashDates(); }
-            else if(cashDatesSet.size) { selectedCashDate = Array.from(cashDatesSet)[0]; renderCashEntries(); renderCashDates(); }
-            else { selectedCashDate = null; document.getElementById("cashEntriesTable").classList.remove("show"); }
+            if(cashDatesSet.has(today)) {
+                selectedCashDate = today;
+            } else if(cashDatesSet.size) {
+                selectedCashDate = Array.from(cashDatesSet)[0];
+            } else {
+                selectedCashDate = null;
+            }
+            renderCashEntries();
+            renderCashDates();
         } else {
-            if(selectedLoanDate && loanDatesSet.has(selectedLoanDate)) renderLoanEntries();
-            else if(loanDatesSet.has(today)) { selectedLoanDate = today; renderLoanEntries(); renderLoanDates(); }
-            else if(loanDatesSet.size) { selectedLoanDate = Array.from(loanDatesSet)[0]; renderLoanEntries(); renderLoanDates(); }
-            else { selectedLoanDate = null; document.getElementById("loanEntriesTable").classList.remove("show"); }
+            if(loanDatesSet.has(today)) {
+                selectedLoanDate = today;
+            } else if(loanDatesSet.size) {
+                selectedLoanDate = Array.from(loanDatesSet)[0];
+            } else {
+                selectedLoanDate = null;
+            }
+            renderLoanEntries();
+            renderLoanDates();
         }
     }
     
@@ -345,9 +595,9 @@
                     <button class="btn-icon" onclick="editCashWithAuth(${e.id})" title="Edit"><i class="fas fa-edit"></i></button>
                     <button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" title="Delete" style="color:#e74c3c"><i class="fas fa-trash"></i></button>
                 </td>
-            </table>`;
+            </tr>`;
         });
-        html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -383,7 +633,6 @@
         if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; }
         if(confirm("क्या आप यह प्रविष्टि हटाना चाहते हैं?")){
             await del("cash",id);
-            await loadAll();
         }
     };
     
@@ -449,7 +698,7 @@
                 </td>
             </tr>`;
         });
-        html += `</tbody><tr><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -491,7 +740,6 @@
         if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; }
         if(confirm("क्या आप यह लोन हटाना चाहते हैं?")){
             await del("loan",id);
-            await loadAll();
         }
     };
     
@@ -561,13 +809,34 @@
     }
     async function saveNotesToDB() { await save("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); showToast("✅ Note counts saved"); }
     function calculateNoteTotal() { let total=0; for(let d of denoms) { let val=parseInt(noteCounts[d]); if(!isNaN(val) && val>0) total+=val*d; } return total; }
+    
     function renderNotePopup() {
         let container = document.getElementById("noteGrid");
         let html = '';
         for(let d of denoms) {
             let count = noteCounts[d] === "" ? "" : noteCounts[d];
             let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0;
-            html += `<div class="note-row"><span class="note-label">₹${d}</span><input type="number" class="note-input" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1"><span class="note-value">₹${value.toLocaleString('en-IN')}</span></div>`;
+            
+            let iconHtml = '';
+            if(d === 10) {
+                iconHtml = '<div class="note-icon coin-10">🔟</div>';
+            } else if(d === 5) {
+                iconHtml = '<div class="note-icon coin-5">5️⃣</div>';
+            } else if(d >= 100) {
+                iconHtml = `<div class="note-icon" style="background: linear-gradient(135deg, #27ae60, #1e8449);">💰</div>`;
+            } else {
+                iconHtml = `<div class="note-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🪙</div>`;
+            }
+            
+            html += `
+                <div class="note-row">
+                    ${iconHtml}
+                    <div class="note-details">
+                        <span class="note-label">₹${d}</span>
+                        <input type="number" class="note-input" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1">
+                        <span class="note-value">₹${value.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>`;
         }
         container.innerHTML = html;
         document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
@@ -584,6 +853,7 @@
             });
         });
     }
+    
     function resetNoteFields() { for(let d of denoms) noteCounts[d] = ""; renderNotePopup(); }
     
     document.getElementById("noteCountingIcon").onclick = () => { renderNotePopup(); document.getElementById("noteModal").style.display = "flex"; };
@@ -615,10 +885,15 @@
     document.getElementById("restoreBtn").onclick = () => document.getElementById("restoreFileInput").click();
     document.getElementById("restoreFileInput").addEventListener("change", async(e) => {
         let file = e.target.files[0]; if(!file) return; let text = await file.text();
-        try { let data = JSON.parse(text); if(data.cash) for(let c of data.cash) { c.userId = currentUser.id; await save("cash", c); } if(data.loan) for(let l of data.loan) { l.userId = currentUser.id; await save("loan", l); } if(data.cashDates) data.cashDates.forEach(d=>cashDatesSet.add(d)); if(data.loanDates) data.loanDates.forEach(d=>loanDatesSet.add(d)); await loadAll(); showToast("✅ Restore सफल"); } catch(e) { alert("Invalid JSON"); } e.target.value = "";
+        try { let data = JSON.parse(text); if(data.cash) for(let c of data.cash) { c.userId = currentUser.id; await save("cash", c); } if(data.loan) for(let l of data.loan) { l.userId = currentUser.id; await save("loan", l); } await loadAll(); showToast("✅ Restore सफल"); } catch(e) { alert("Invalid JSON"); } e.target.value = "";
     });
     
-    document.getElementById("refreshDataBtn").onclick = async () => { showToast("🔄 Syncing from cloud..."); await syncFromSupabase(); showToast("✅ Sync complete"); };
+    document.getElementById("refreshDataBtn").onclick = async () => { await syncFromSupabase(false); };
+    document.getElementById("hardRefreshBtn").onclick = async () => { 
+        if(confirm("⚠️ This will clear local data and fetch fresh from cloud. Continue?")) {
+            await syncFromSupabase(true);
+        }
+    };
     
     function checkBackupReminder() {
         if(!currentUser) return;
@@ -664,7 +939,7 @@
             await openDB();
             await loadAll();
             await loadNotes();
-            await syncFromSupabase();
+            await syncFromSupabase(true);
             checkBackupReminder();
             return;
         }
@@ -683,7 +958,7 @@
         await openDB();
         await loadAll();
         await loadNotes();
-        await syncFromSupabase();
+        await syncFromSupabase(true);
         checkBackupReminder();
         document.getElementById("loginLoading").innerText = "";
     }
@@ -697,7 +972,7 @@
                 document.getElementById("loginOverlay").style.display = "none";
                 document.getElementById("mainApp").classList.remove("hide-app");
                 updateExpiryBadge(null);
-                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(); checkBackupReminder(); });
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); });
                 return true;
             }
             let today = new Date().toISOString().slice(0,10);
@@ -706,12 +981,47 @@
                 document.getElementById("loginOverlay").style.display = "none";
                 document.getElementById("mainApp").classList.remove("hide-app");
                 updateExpiryBadge(currentUser.expiry);
-                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(); checkBackupReminder(); });
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); });
                 return true;
             } else { localStorage.removeItem("currentUser"); }
         }
         return false;
     }
+    
+    // Auto-sync when app comes to foreground (for mobile)
+    document.addEventListener("visibilitychange", () => {
+        if(!document.hidden && navigator.onLine && currentUser) {
+            console.log("App came to foreground, syncing...");
+            syncFromSupabase(false);
+        }
+    });
+    
+    // Periodic auto-sync every 2 minutes
+    setInterval(() => {
+        if(navigator.onLine && currentUser && document.visibilityState === "visible") {
+            syncFromSupabase(false);
+        }
+    }, 120000);
+    
+    // Pull to refresh on mobile
+    let touchStartY = 0;
+    let pullToRefreshThreshold = 80;
+    let isRefreshing = false;
+    
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    });
+    
+    document.addEventListener('touchmove', (e) => {
+        let scrollTop = window.scrollY || document.documentElement.scrollTop;
+        if(scrollTop === 0 && !isRefreshing && e.touches[0].clientY > touchStartY + pullToRefreshThreshold) {
+            isRefreshing = true;
+            showToast("🔄 Pull to refresh...");
+            syncFromSupabase(true).then(() => {
+                setTimeout(() => { isRefreshing = false; }, 1000);
+            });
+        }
+    });
     
     window.onclick = e=>{ if(e.target.classList.contains("modal")) e.target.style.display="none"; };
     document.getElementById("tabCashBtn").onclick = ()=>{ currentActiveTab="cash"; document.getElementById("cashSection").style.display="block"; document.getElementById("loanSection").style.display="none"; document.getElementById("tabCashBtn").classList.add("active"); document.getElementById("tabLoanBtn").classList.remove("active"); };
