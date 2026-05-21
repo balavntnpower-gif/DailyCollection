@@ -179,7 +179,13 @@
     
     function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2000); }
     
+    // ========== FIXED SAVE FUNCTION WITH ID GENERATION ==========
     async function save(store, item) {
+        // Generate ID if not exists
+        if (!item.id) {
+            item.id = Date.now();
+        }
+        
         let tx = db.transaction(store, "readwrite");
         tx.objectStore(store).put(item);
         await new Promise(r => tx.oncomplete = r);
@@ -189,16 +195,47 @@
                 let table = store === 'cash' ? 'daily_cash' : (store === 'loan' ? 'daily_loan' : 'daily_notes');
                 let supItem = {};
                 if(store === 'cash') {
-                    supItem = { id: item.id, name: item.name, amount: item.amount, date: item.date, mode: item.mode || 'Cash', remark: item.remark || '', userid: item.userId || currentUser.id, username: item.userName || currentUser.name };
+                    supItem = { 
+                        id: item.id, 
+                        name: item.name, 
+                        amount: item.amount, 
+                        date: item.date, 
+                        mode: item.mode || 'Cash', 
+                        remark: item.remark || '', 
+                        userid: item.userId || currentUser.id, 
+                        username: item.userName || currentUser.name 
+                    };
                 } else if(store === 'loan') {
-                    supItem = { id: item.id, name: item.name, address: item.address || '', loanamount: item.loanAmount, date: item.date, period: item.period, interest: item.interest || null, remark: item.remark || '', userid: item.userId || currentUser.id, username: item.userName || currentUser.name };
+                    supItem = { 
+                        id: item.id, 
+                        name: item.name, 
+                        address: item.address || '', 
+                        loanamount: item.loanAmount, 
+                        date: item.date, 
+                        period: item.period, 
+                        interest: item.interest || null, 
+                        remark: item.remark || '', 
+                        userid: item.userId || currentUser.id, 
+                        username: item.userName || currentUser.name 
+                    };
                 } else {
-                    supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
+                    supItem = { 
+                        id: item.id, 
+                        counts: item.counts, 
+                        userid: currentUser.id 
+                    };
                 }
                 console.log("Saving to Supabase:", table, supItem);
                 const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
-                if(error) { console.error("Save error:", error); showToast("Save failed: "+error.message); updateSyncStatus('error','❌'); }
-                else { console.log("Saved successfully"); showToast("Saved to cloud"); updateSyncStatus('synced','✅'); }
+                if(error) { 
+                    console.error("Save error:", error); 
+                    showToast("Save failed: " + error.message); 
+                    updateSyncStatus('error','❌');
+                } else { 
+                    console.log("Saved successfully"); 
+                    showToast("Saved to cloud"); 
+                    updateSyncStatus('synced','✅');
+                }
             } catch(e) { console.error(e); }
         }
     }
@@ -324,7 +361,7 @@
             container.innerHTML = `<div style="text-align:center;padding:20px">No entries <button class="add-btn" onclick="openCashForDate('${selectedCashDate}')">+ Add Entry</button></div>`;
             container.classList.add("show"); return;
         }
-        let html = `<table><thead><tr><th>Name</th><th>Amount</th><th>Date</th><th>Mode</th><th>Remark</th><th></th></tr></thead><tbody>`;
+        let html = `<td><thead><tr><th>Name</th><th>Amount</th><th>Date</th><th>Mode</th><th>Remark</th><th></th></tr></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td>`; });
         html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')">+ Add Entry</button>`;
         container.innerHTML = html; container.classList.add("show");
@@ -408,7 +445,7 @@
             container.innerHTML = `<div style="text-align:center;padding:20px">No loans <button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ Add Loan</button></div>`;
             container.classList.add("show"); return;
         }
-        let html = `<table><thead><tr><th>Name/Address</th><th>Amount</th><th>Return</th><th>Per Day</th><th>Period</th><th>Date</th><th>Remark</th><th></th></tr></thead><tbody>`;
+        let html = `</table><thead><tr><th>Name/Address</th><th>Amount</th><th>Return</th><th>Per Day</th><th>Period</th><th>Date</th><th>Remark</th><th></th></tr></thead><tbody>`;
         entries.forEach(l => { let {ret,daily} = calcReturnAndDaily(l); let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} days`; let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`; let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`;
             html += `<tr>
                 <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
