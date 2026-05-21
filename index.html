@@ -131,9 +131,9 @@
         .btn-icon { background: none; border: none; margin: 0 3px; cursor: pointer; font-size: 0.9rem; padding: 4px 6px; border-radius: 20px; transition: all 0.2s; }
         .btn-icon:hover { background: #eef2f5; }
         .add-btn { background: #0f6b3a; color: white; border: none; padding: 10px; border-radius: 40px; margin-top: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 0.8rem; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: flex-start; justify-content: center; z-index: 1000; overflow-y: auto; }
-        .modal-card { background: white; width: 92%; max-width: 400px; border-radius: 24px; padding: 15px; margin-top: 8vh; margin-bottom: 20px; }
-        .modal-card h3 { font-size: 1.1rem; text-align: center; margin-bottom: 15px; color: #0f6b3a; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-card { background: white; width: 95%; max-width: 360px; border-radius: 20px; padding: 12px; margin: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-card h3 { font-size: 1rem; text-align: center; margin-bottom: 10px; color: #0f6b3a; }
         .form-group { margin-bottom: 12px; position: relative; }
         .form-group input, .form-group select { width: 100%; padding: 10px 14px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.85rem; background: white; }
         .date-range-group { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -142,24 +142,92 @@
         .btn-save { background: #0f6b3a; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
         .btn-cancel { background: #95a5a6; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
         
-        /* Note Counting Styles */
-        .note-grid { display: flex; flex-direction: column; gap: 12px; margin: 15px 0; max-height: 60vh; overflow-y: auto; padding: 5px; }
-        .note-row { display: flex; align-items: center; gap: 12px; background: #f8f9fa; padding: 10px 12px; border-radius: 16px; transition: all 0.2s; }
-        .note-row:hover { background: #e8f5e9; transform: scale(1.01); }
-        .note-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ffd700, #ffb300); border-radius: 50%; font-size: 1.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .note-icon.coin-10 { background: linear-gradient(135deg, #cd7f32, #b87333); }
-        .note-icon.coin-5 { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
-        .note-details { flex: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-        .note-label { font-weight: 700; font-size: 1rem; min-width: 55px; color: #333; }
-        .note-input { width: 80px; padding: 10px 8px; border-radius: 12px; border: 2px solid #ddd; text-align: center; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
-        .note-input:focus { outline: none; border-color: #0f6b3a; box-shadow: 0 0 0 3px rgba(15,107,58,0.1); }
-        .note-value { font-weight: 700; font-size: 0.95rem; color: #0f6b3a; min-width: 80px; text-align: right; background: white; padding: 6px 12px; border-radius: 20px; }
-        .total-row { text-align: center; font-size: 1.2rem; font-weight: bold; margin: 15px 0; padding: 12px; background: linear-gradient(135deg, #0f6b3a, #0a4f2c); color: white; border-radius: 20px; }
-        .note-modal-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 15px; }
-        .note-modal-buttons button { padding: 10px 20px; border-radius: 40px; font-weight: bold; cursor: pointer; border: none; font-size: 0.85rem; }
-        .note-modal-buttons button:first-child { background: #e74c3c; color: white; }
-        .note-modal-buttons button:nth-child(2) { background: #0f6b3a; color: white; }
-        .note-modal-buttons button:last-child { background: #95a5a6; color: white; }
+        /* Simple Single Line Note Counting - No Images */
+        .note-list-simple {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 10px 0;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+        
+        .note-row-simple {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 10px 12px;
+            border-radius: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .note-label-simple {
+            font-weight: 700;
+            font-size: 0.9rem;
+            min-width: 45px;
+            color: #333;
+        }
+        
+        .note-input-simple {
+            width: 70px;
+            padding: 8px 6px;
+            border-radius: 10px;
+            border: 1.5px solid #ddd;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: white;
+        }
+        
+        .note-input-simple:focus {
+            outline: none;
+            border-color: #0f6b3a;
+        }
+        
+        .note-value-simple {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #0f6b3a;
+            min-width: 70px;
+            text-align: right;
+            background: #e8f5e9;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
+        
+        .total-row-simple {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 8px 0;
+            padding: 8px;
+            background: linear-gradient(135deg, #0f6b3a, #0a4f2c);
+            color: white;
+            border-radius: 16px;
+        }
+        
+        .note-modal-buttons-simple {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .note-modal-buttons-simple button {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 0.75rem;
+            flex: 1;
+        }
+        
+        .note-modal-buttons-simple button:first-child { background: #e74c3c; color: white; }
+        .note-modal-buttons-simple button:nth-child(2) { background: #0f6b3a; color: white; }
+        .note-modal-buttons-simple button:last-child { background: #95a5a6; color: white; }
         
         .reminder-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 2500; text-align: center; padding: 25px; width: 85%; max-width: 320px; border: 2px solid #0f6b3a; }
         .reminder-popup.hide { display: none; }
@@ -175,10 +243,6 @@
         .network-status { font-size: 10px; margin-top: 8px; color: #888; }
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.75rem; z-index: 1200; animation: fadeInOut 2s ease-in-out; }
         .hide-app { display: none; }
-        .loan-name-cell { font-weight: 600; }
-        .loan-address-cell { font-size: 0.65rem; color: #666; margin-top: 2px; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translateY(20px); }
             15% { opacity: 1; transform: translateY(0); }
@@ -258,13 +322,13 @@
 <div id="cashModal" class="modal"><div class="modal-card"><h3>नई प्रविष्टि</h3><form id="cashForm"><input type="hidden" id="cashId"><div class="form-group"><input id="cashName" placeholder="नाम" required></div><div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div><div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div><div class="form-group"><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div><div class="form-group"><input id="cashRemark" placeholder="Remark (optional)"></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
 <div id="loanModal" class="modal"><div class="modal-card"><h3>नया लोन</h3><form id="loanForm"><input type="hidden" id="loanId"><div class="form-group"><input id="loanName" placeholder="नाम" required></div><div class="form-group"><input id="loanAddress" placeholder="पता" required></div><div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div><div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div><div class="form-group"><select id="loanPeriod"><option value="month">Month (%)</option><option value="60">60 दिन</option><option value="80">80 दिन</option><option value="100">100 दिन</option><option value="120">120 दिन</option></select></div><div id="percentDiv"><div class="form-group"><input type="number" id="interestPercent" placeholder="ब्याज (%)" value="10"></div></div><div class="form-group"><input id="loanRemark" placeholder="Remark (optional)"></div><div class="modal-buttons"><button type="submit" class="btn-save">सेव करें</button></div></form></div></div>
 
-<!-- Note Counting Modal -->
+<!-- Simple Single Line Note Counting Modal - No Images -->
 <div id="noteModal" class="modal">
     <div class="modal-card">
-        <h3><i class="fas fa-coins"></i> नोट/सिक्का गणना</h3>
-        <div class="total-row">💰 कुल राशि: ₹<span id="noteTotal">0</span></div>
-        <div class="note-grid" id="noteGrid"></div>
-        <div class="note-modal-buttons">
+        <h3><i class="fas fa-calculator"></i> नोट/सिक्का गणना</h3>
+        <div class="total-row-simple">💰 कुल राशि: ₹<span id="noteTotal">0</span></div>
+        <div class="note-list-simple" id="noteGrid"></div>
+        <div class="note-modal-buttons-simple">
             <button id="resetNotesBtn"><i class="fas fa-undo-alt"></i> रीसेट</button>
             <button id="saveNotesBtn"><i class="fas fa-save"></i> सेव करें</button>
             <button id="closeNoteModalBtn"><i class="fas fa-times"></i> बंद करें</button>
@@ -535,7 +599,6 @@
         renderLoanDates();
         let today = getToday();
         
-        // Set default selection to current date
         if(currentActiveTab === "cash") {
             if(cashDatesSet.has(today)) {
                 selectedCashDate = today;
@@ -597,7 +660,7 @@
                 </td>
             </tr>`;
         });
-        html += `</tbody><table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody></tr><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -698,7 +761,7 @@
                 </td>
             </tr>`;
         });
-        html += `</tbody><table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody><tr><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -817,37 +880,24 @@
             let count = noteCounts[d] === "" ? "" : noteCounts[d];
             let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0;
             
-            let iconHtml = '';
-            if(d === 10) {
-                iconHtml = '<div class="note-icon coin-10">🔟</div>';
-            } else if(d === 5) {
-                iconHtml = '<div class="note-icon coin-5">5️⃣</div>';
-            } else if(d >= 100) {
-                iconHtml = `<div class="note-icon" style="background: linear-gradient(135deg, #27ae60, #1e8449);">💰</div>`;
-            } else {
-                iconHtml = `<div class="note-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🪙</div>`;
-            }
-            
+            // Single line format - no images, just text
             html += `
-                <div class="note-row">
-                    ${iconHtml}
-                    <div class="note-details">
-                        <span class="note-label">₹${d}</span>
-                        <input type="number" class="note-input" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1">
-                        <span class="note-value">₹${value.toLocaleString('en-IN')}</span>
-                    </div>
+                <div class="note-row-simple">
+                    <span class="note-label-simple">₹${d}</span>
+                    <input type="number" class="note-input-simple" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1">
+                    <span class="note-value-simple">₹${value.toLocaleString('en-IN')}</span>
                 </div>`;
         }
         container.innerHTML = html;
         document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
-        document.querySelectorAll(".note-input").forEach(inp => {
+        document.querySelectorAll(".note-input-simple").forEach(inp => {
             inp.addEventListener("input", (e) => {
                 let denom = parseInt(e.target.dataset.denom);
                 let val = e.target.value === "" ? "" : parseInt(e.target.value);
                 if(isNaN(val)) val = "";
                 noteCounts[denom] = val === "" ? "" : val;
                 let valNum = (val === "" || isNaN(val)) ? 0 : val;
-                let vs = e.target.parentElement.querySelector(".note-value");
+                let vs = e.target.parentElement.querySelector(".note-value-simple");
                 if(vs) vs.innerText = `₹${(valNum * denom).toLocaleString('en-IN')}`;
                 document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN');
             });
@@ -988,7 +1038,6 @@
         return false;
     }
     
-    // Auto-sync when app comes to foreground (for mobile)
     document.addEventListener("visibilitychange", () => {
         if(!document.hidden && navigator.onLine && currentUser) {
             console.log("App came to foreground, syncing...");
@@ -996,14 +1045,12 @@
         }
     });
     
-    // Periodic auto-sync every 2 minutes
     setInterval(() => {
         if(navigator.onLine && currentUser && document.visibilityState === "visible") {
             syncFromSupabase(false);
         }
     }, 120000);
     
-    // Pull to refresh on mobile
     let touchStartY = 0;
     let pullToRefreshThreshold = 80;
     let isRefreshing = false;
