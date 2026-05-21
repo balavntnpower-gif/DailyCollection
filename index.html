@@ -195,7 +195,7 @@
                 } else {
                     supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
                 }
-                console.log("Saving:", table, supItem);
+                console.log("Saving to Supabase:", table, supItem);
                 const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
                 if(error) { console.error("Save error:", error); showToast("Save failed: "+error.message); updateSyncStatus('error','❌'); }
                 else { console.log("Saved successfully"); showToast("Saved to cloud"); updateSyncStatus('synced','✅'); }
@@ -226,11 +226,11 @@
     async function syncFromSupabase() {
         if(!supabaseClient || !currentUser) return false;
         updateSyncStatus('pending','⏳');
-        showToast("Syncing...");
+        showToast("Syncing from cloud...");
         try {
             const { data: cashDB, error: cashErr } = await supabaseClient.from('daily_cash').select('*').eq('userid', currentUser.id);
             if(cashErr) console.error("Cash error:", cashErr);
-            else if(cashDB && cashDB.length) { for(let c of cashDB) { await saveToIndexedDBOnly("cash", { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode, remark: c.remark||'', userId: c.userid, userName: c.username }); } showToast(`Downloaded ${cashDB.length} cash`); }
+            else if(cashDB && cashDB.length) { for(let c of cashDB) { await saveToIndexedDBOnly("cash", { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode, remark: c.remark||'', userId: c.userid, userName: c.username }); } showToast(`Downloaded ${cashDB.length} cash records`); }
             
             const { data: loanDB, error: loanErr } = await supabaseClient.from('daily_loan').select('*').eq('userid', currentUser.id);
             if(loanErr) console.error("Loan error:", loanErr);
@@ -325,7 +325,7 @@
             container.classList.add("show"); return;
         }
         let html = `<table><thead><tr><th>Name</th><th>Amount</th><th>Date</th><th>Mode</th><th>Remark</th><th></th></tr></thead><tbody>`;
-        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
+        entries.forEach(e=>{ html += `<tr><td><strong>${escape(e.name)}</strong></td><td>₹${formatAmount(e.amount)}</td><td>${e.date}</td><td>${e.mode}</td><td>${escape(e.remark || '')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})"><i class="fas fa-trash"></i></button></td>`; });
         html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')">+ Add Entry</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
@@ -410,7 +410,17 @@
         }
         let html = `<table><thead><tr><th>Name/Address</th><th>Amount</th><th>Return</th><th>Per Day</th><th>Period</th><th>Date</th><th>Remark</th><th></th></tr></thead><tbody>`;
         entries.forEach(l => { let {ret,daily} = calcReturnAndDaily(l); let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} days`; let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`; let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`;
-            html += `<tr><td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td><td>₹${formatAmount(l.loanAmount)}</td><td>${returnText}</td><td>${perDayText}</td><td>${periodText}</td><td>${l.date}</td><td>${escape(l.remark||'')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td></tr>`; });
+            html += `<tr>
+                <td><strong>${escape(l.name)}</strong><br><small>${escape(l.address)}</small></td>
+                <td>₹${formatAmount(l.loanAmount)}</td>
+                <td>${returnText}</td>
+                <td>${perDayText}</td>
+                <td>${periodText}</td>
+                <td>${l.date}</td>
+                <td>${escape(l.remark||'')}</td>
+                <td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+        });
         html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')">+ Add Loan</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
