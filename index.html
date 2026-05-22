@@ -112,7 +112,15 @@
         .create-btn-center { background: #0f6b3a; color: white; border: none; padding: 6px 18px; border-radius: 40px; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .refresh-btn { background: #3498db; color: white; border: none; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; margin-left: 5px; }
         .hard-refresh-btn { background: #e74c3c; color: white; border: none; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; margin-left: 5px; }
-        .backup-bar { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; }
+        .backup-bar { display: flex; gap: 8px; margin-bottom: 15px; justify-content: center; flex-wrap: wrap; align-items: center; }
+        .search-container { position: relative; flex-shrink: 0; }
+        #customerSearch { padding: 6px 12px; border-radius: 40px; border: 1px solid #ddd; font-size: 0.7rem; background: white; width: 130px; }
+        .search-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 200px; overflow-y: auto; z-index: 100; display: none; }
+        .search-suggestions.show { display: block; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.7rem; display: flex; justify-content: space-between; align-items: center; }
+        .suggestion-item:hover { background: #e8f5e9; }
+        .suggestion-name { font-weight: 600; color: #333; }
+        .suggestion-total { color: #0f6b3a; font-weight: bold; }
         .backup-btn, .restore-btn, .range-backup-btn { background: white; border: none; padding: 6px 12px; border-radius: 40px; font-weight: bold; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .range-backup-btn { background: #e67e22; color: white; }
         .restore-btn { background: #eef2fa; }
@@ -229,6 +237,117 @@
         .note-modal-buttons-simple button:nth-child(2) { background: #0f6b3a; color: white; }
         .note-modal-buttons-simple button:last-child { background: #95a5a6; color: white; }
         
+        /* Search Results Section */
+        .search-results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0f6b3a;
+        }
+        
+        .search-header h3 {
+            font-size: 0.9rem;
+            color: #0f6b3a;
+            margin: 0;
+        }
+        
+        .close-search {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        .month-filter {
+            margin-bottom: 12px;
+        }
+        
+        .month-filter select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 0.75rem;
+            background: #f8f9fa;
+        }
+        
+        .customer-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: linear-gradient(135deg, #0f6b3a, #0a4f2c);
+            color: white;
+            padding: 10px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            display: block;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .search-results-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .search-result-date {
+            font-size: 0.7rem;
+            color: #666;
+            min-width: 80px;
+        }
+        
+        .search-result-amount {
+            font-weight: bold;
+            color: #0f6b3a;
+            font-size: 0.85rem;
+        }
+        
+        .search-result-mode {
+            background: #eef2fa;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+        
         .reminder-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 2500; text-align: center; padding: 25px; width: 85%; max-width: 320px; border: 2px solid #0f6b3a; }
         .reminder-popup.hide { display: none; }
         .reminder-btn { background: #0f6b3a; color: white; border: none; padding: 12px 20px; border-radius: 40px; margin-top: 15px; font-weight: bold; cursor: pointer; width: 100%; }
@@ -298,11 +417,39 @@
     </div>
 
     <div class="backup-bar">
+        <div class="search-container">
+            <input type="text" id="customerSearch" placeholder="🔍 नाम खोजें..." autocomplete="off">
+            <div id="searchSuggestions" class="search-suggestions"></div>
+        </div>
         <button class="backup-btn" id="jsonBackupBtn"><i class="fas fa-download"></i> JSON</button>
         <button class="backup-btn" id="excelBackupBtn"><i class="fas fa-file-excel"></i> Excel</button>
         <button class="range-backup-btn" id="rangeBackupBtn"><i class="fas fa-calendar-range"></i> Date Range Excel</button>
         <button class="restore-btn" id="restoreBtn"><i class="fas fa-upload"></i> Restore</button>
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;">
+    </div>
+
+    <!-- Search Results Section -->
+    <div id="searchResultsSection" class="search-results-section">
+        <div class="search-header">
+            <h3><i class="fas fa-chart-line"></i> ग्राहक खोज परिणाम</h3>
+            <button id="closeSearchBtn" class="close-search"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="month-filter">
+            <select id="monthFilter">
+                <option value="all">📅 सभी महीने</option>
+            </select>
+        </div>
+        <div class="customer-stats">
+            <div class="stat-card">
+                <span class="stat-label">कुल राशि:</span>
+                <span class="stat-value" id="searchTotalAmount">₹0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">कुल लेनदेन:</span>
+                <span class="stat-value" id="searchTransactionCount">0</span>
+            </div>
+        </div>
+        <div class="search-results-list" id="searchResultsList"></div>
     </div>
 
     <div id="cashSection">
@@ -660,7 +807,7 @@
                 </td>
             </tr>`;
         });
-        html += `</tbody></tr><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
+        html += `</tbody></table><button class="add-btn" onclick="openCashForDate('${selectedCashDate}')"><i class="fas fa-plus"></i> नई प्रविष्टि जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -761,7 +908,7 @@
                 </td>
             </tr>`;
         });
-        html += `</tbody><tr><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
+        html += `</tbody></table><button class="add-btn" onclick="openLoanForDate('${selectedLoanDate}')"><i class="fas fa-plus"></i> नया लोन जोड़ें</button>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -880,7 +1027,6 @@
             let count = noteCounts[d] === "" ? "" : noteCounts[d];
             let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0;
             
-            // Single line format - no images, just text
             html += `
                 <div class="note-row-simple">
                     <span class="note-label-simple">₹${d}</span>
@@ -974,6 +1120,159 @@
             document.getElementById("networkStatus").innerText = "❌ No internet!";
             return null;
         }
+    }
+    
+    // ========== SEARCH AND FILTER FUNCTIONS ==========
+    let currentSearchName = "";
+    let currentFilteredEntries = [];
+    
+    function getAllCustomerNames() {
+        let namesMap = new Map();
+        cashData.forEach(c => {
+            let nameLower = c.name.toLowerCase();
+            if(!namesMap.has(nameLower)) {
+                namesMap.set(nameLower, { name: c.name, total: 0 });
+            }
+            namesMap.get(nameLower).total += c.amount;
+        });
+        loanData.forEach(l => {
+            let nameLower = l.name.toLowerCase();
+            if(!namesMap.has(nameLower)) {
+                namesMap.set(nameLower, { name: l.name, total: 0 });
+            }
+            namesMap.get(nameLower).total += l.loanAmount;
+        });
+        return Array.from(namesMap.values()).sort((a, b) => b.total - a.total);
+    }
+    
+    function showSearchSuggestions(query) {
+        let suggestionsDiv = document.getElementById("searchSuggestions");
+        if (!query.trim()) {
+            suggestionsDiv.classList.remove("show");
+            return;
+        }
+        
+        let allCustomers = getAllCustomerNames();
+        let filtered = allCustomers.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+        filtered = filtered.slice(0, 10);
+        
+        if (filtered.length === 0) {
+            suggestionsDiv.classList.remove("show");
+            return;
+        }
+        
+        suggestionsDiv.innerHTML = filtered.map(c => `
+            <div class="suggestion-item" data-name="${escape(c.name)}">
+                <span class="suggestion-name">${escape(c.name)}</span>
+                <span class="suggestion-total">₹${formatAmount(c.total)}</span>
+            </div>
+        `).join("");
+        suggestionsDiv.classList.add("show");
+        
+        document.querySelectorAll(".suggestion-item").forEach(item => {
+            item.addEventListener("click", () => {
+                let name = item.getAttribute("data-name");
+                document.getElementById("customerSearch").value = name;
+                suggestionsDiv.classList.remove("show");
+                performSearch(name);
+            });
+        });
+    }
+    
+    function getMonthYearFromDate(dateStr) {
+        let parts = dateStr.split('/');
+        if(parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}`;
+        }
+        return "";
+    }
+    
+    function getMonthName(monthYear) {
+        let [year, month] = monthYear.split('-');
+        let monthNames = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+        return `${monthNames[parseInt(month) - 1]} ${year}`;
+    }
+    
+    function populateMonthFilter(entries) {
+        let monthSet = new Set();
+        entries.forEach(entry => {
+            let my = getMonthYearFromDate(entry.date);
+            if(my) monthSet.add(my);
+        });
+        
+        let months = Array.from(monthSet).sort();
+        let select = document.getElementById("monthFilter");
+        select.innerHTML = '<option value="all">📅 सभी महीने</option>';
+        months.forEach(m => {
+            select.innerHTML += `<option value="${m}">📅 ${getMonthName(m)}</option>`;
+        });
+    }
+    
+    function performSearch(name) {
+        if (!name) return;
+        
+        currentSearchName = name;
+        
+        let cashEntries = cashData.filter(c => c.name.toLowerCase() === name.toLowerCase());
+        let loanEntries = loanData.filter(l => l.name.toLowerCase() === name.toLowerCase());
+        
+        let allEntries = [
+            ...cashEntries.map(c => ({ ...c, type: "Cash", amount: c.amount, mode: c.mode })),
+            ...loanEntries.map(l => ({ ...l, type: "Loan", amount: l.loanAmount, mode: "Loan" }))
+        ];
+        
+        allEntries.sort((a, b) => {
+            let da = a.date.split('/').reverse().join('-');
+            let db = b.date.split('/').reverse().join('-');
+            return db.localeCompare(da);
+        });
+        
+        currentFilteredEntries = allEntries;
+        populateMonthFilter(allEntries);
+        
+        applyMonthFilter();
+        
+        document.getElementById("searchResultsSection").style.display = "block";
+        document.getElementById("customerSearch").value = name;
+    }
+    
+    function applyMonthFilter() {
+        let selectedMonth = document.getElementById("monthFilter").value;
+        let filtered = currentFilteredEntries;
+        
+        if (selectedMonth !== "all") {
+            filtered = currentFilteredEntries.filter(entry => {
+                return getMonthYearFromDate(entry.date) === selectedMonth;
+            });
+        }
+        
+        let totalAmount = filtered.reduce((s, e) => s + e.amount, 0);
+        let totalTransactions = filtered.length;
+        
+        document.getElementById("searchTotalAmount").innerHTML = `₹${formatAmount(totalAmount)}`;
+        document.getElementById("searchTransactionCount").innerHTML = totalTransactions;
+        
+        let container = document.getElementById("searchResultsList");
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">❌ कोई रिकॉर्ड नहीं मिला</div>`;
+            return;
+        }
+        
+        container.innerHTML = filtered.map(entry => `
+            <div class="search-result-item">
+                <div style="flex:1">
+                    <div><strong>${escape(entry.name)}</strong></div>
+                    <div class="search-result-date">📅 ${entry.date}</div>
+                </div>
+                <div class="search-result-amount">💰 ₹${formatAmount(entry.amount)}</div>
+                <div class="search-result-mode">
+                    ${entry.type === 'Cash' ? 
+                        (entry.mode ? `<i class="fas fa-money-bill-wave"></i> ${entry.mode}` : '<i class="fas fa-coins"></i> Cash') : 
+                        '<i class="fas fa-hand-holding-usd"></i> Loan'}
+                </div>
+                ${entry.remark ? `<div style="font-size:0.65rem;color:#666;width:100%;margin-top:5px;">📝 ${escape(entry.remark)}</div>` : ''}
+            </div>
+        `).join("");
     }
     
     async function checkLogin() {
@@ -1075,6 +1374,29 @@
     document.getElementById("tabLoanBtn").onclick = ()=>{ currentActiveTab="loan"; document.getElementById("cashSection").style.display="none"; document.getElementById("loanSection").style.display="block"; document.getElementById("tabLoanBtn").classList.add("active"); document.getElementById("tabCashBtn").classList.remove("active"); };
     document.getElementById("loginBtn").onclick = checkLogin;
     document.getElementById("loginPassword").addEventListener("keypress", e => { if(e.key === 'Enter') checkLogin(); });
+    
+    // Search Event Listeners
+    document.getElementById("customerSearch").addEventListener("input", (e) => {
+        showSearchSuggestions(e.target.value);
+    });
+    
+    document.getElementById("customerSearch").addEventListener("blur", () => {
+        setTimeout(() => {
+            document.getElementById("searchSuggestions").classList.remove("show");
+        }, 200);
+    });
+    
+    document.getElementById("closeSearchBtn").addEventListener("click", () => {
+        document.getElementById("searchResultsSection").style.display = "none";
+        document.getElementById("customerSearch").value = "";
+        currentSearchName = "";
+    });
+    
+    document.getElementById("monthFilter").addEventListener("change", () => {
+        if(currentSearchName) {
+            applyMonthFilter();
+        }
+    });
     
     initSupabase();
     if(!checkSavedLogin()) { document.getElementById("loginOverlay").style.display = "flex"; document.getElementById("mainApp").classList.add("hide-app"); }
