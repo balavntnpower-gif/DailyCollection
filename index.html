@@ -68,7 +68,22 @@
         .sync-status.error { background: #e74c3c; }
         .header h1 { font-size: 1.3rem; font-weight: 600; }
         .header p { font-size: 0.7rem; opacity: 0.9; }
-        .expiry-badge { position: absolute; right: 16px; top: 8px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: bold; }
+        .expiry-badge { 
+            position: absolute; 
+            right: 16px; 
+            top: 8px; 
+            background: rgba(0,0,0,0.6); 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 0.65rem; 
+            font-weight: bold;
+            z-index: 5;
+        }
+        .expiry-badge.warning { background: #e67e22; animation: pulse 1s infinite; }
+        .expiry-badge.danger { background: #e74c3c; animation: pulse 0.5s infinite; }
+        .expiry-badge.valid { background: #27ae60; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        
         .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: white; border: none; padding: 10px 0; border-radius: 40px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
         .tab-btn.active { background: #0f6b3a; color: white; }
@@ -93,57 +108,13 @@
         .range-backup-btn { background: #e67e22; color: white; }
         .restore-btn { background: #eef2fa; }
         
-        /* Date List Styles - Plus centered between date and amount */
         .date-list { background: white; border-radius: 20px; padding: 5px; margin-bottom: 12px; max-height: 180px; overflow-y: auto; }
-        .date-item { 
-            padding: 12px 16px; 
-            border-bottom: 1px solid #eef2f5; 
-            cursor: pointer; 
-            font-weight: 500; 
-            font-size: 0.85rem; 
-            display: flex; 
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: nowrap;
-        }
-        .date-text { 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            flex-shrink: 0;
-            font-size: 0.85rem;
-            width: 110px;
-        }
-        .date-amount { 
-            font-weight: 700; 
-            color: #0f6b3a; 
-            font-size: 0.9rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-            text-align: right;
-            width: 80px;
-        }
+        .date-item { padding: 12px 16px; border-bottom: 1px solid #eef2f5; cursor: pointer; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
+        .date-text { display: flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 0.85rem; width: 110px; }
+        .date-amount { font-weight: 700; color: #0f6b3a; font-size: 0.9rem; white-space: nowrap; flex-shrink: 0; text-align: right; width: 80px; }
         .loan-date-amount { color: #dc2626; }
-        
-        /* Simple + button - centered, no circle, red, bold */
-        .add-icon-btn { 
-            background: none !important;
-            border: none !important;
-            color: #e74c3c !important;
-            font-size: 1.6rem !important;
-            font-weight: 900 !important;
-            width: auto !important;
-            height: auto !important;
-            border-radius: 0 !important;
-            padding: 0 20px !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            cursor: pointer;
-            line-height: 1;
-            flex-shrink: 0;
-        }
+        .add-icon-btn { background: none !important; border: none !important; color: #e74c3c !important; font-size: 1.6rem !important; font-weight: 900 !important; width: auto !important; height: auto !important; border-radius: 0 !important; padding: 0 20px !important; margin: 0 !important; box-shadow: none !important; cursor: pointer; line-height: 1; flex-shrink: 0; }
         .add-icon-btn:active { opacity: 0.7; transform: scale(0.95); }
-        
         .active-date { background: #e0f2fe; border-left: 3px solid #2563eb; }
         
         .entry-table { background: white; border-radius: 20px; padding: 10px; margin-top: 6px; overflow-x: auto; display: none; }
@@ -155,18 +126,60 @@
         .btn-icon { background: none; border: none; margin: 0 3px; cursor: pointer; font-size: 0.9rem; padding: 4px 6px; border-radius: 20px; transition: all 0.2s; }
         .btn-icon:hover { background: #eef2f5; }
         
-        /* Modal Styles - Top positioned for keyboard */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: flex-start; justify-content: center; z-index: 1000; overflow-y: auto; padding-top: 5%; }
         .modal-card { background: white; width: 95%; max-width: 380px; border-radius: 24px; padding: 16px; margin: 10px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
         .modal-card h3 { display: none; }
-        .modal-save-top { position: absolute; top: 12px; right: 16px; }
+        .modal-save-top { position: absolute; top: 12px; right: 16px; z-index: 10; }
         .btn-save-small { background: #0f6b3a; color: white; border: none; padding: 6px 16px; border-radius: 30px; font-weight: bold; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-save-small i { font-size: 0.7rem; }
         
-        .form-group { margin-bottom: 12px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.85rem; background: white; }
+        .form-group { margin-bottom: 12px; position: relative; }
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 10px 70px 10px 14px; 
+            border-radius: 24px; 
+            border: 1px solid #ddd; 
+            font-size: 0.85rem; 
+            background: white; 
+        }
+        
+        /* Custom Name Suggestions Box - No dropdown arrow */
+        .custom-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            margin-top: 4px;
+        }
+        .custom-suggestions.show {
+            display: block;
+        }
+        .custom-suggestion-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+        .custom-suggestion-item:hover {
+            background: #e8f5e9;
+        }
+        .custom-suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .form-group input:focus { outline: none; border-color: #0f6b3a; }
+        
         .form-row-2 { display: flex; gap: 10px; margin-bottom: 12px; }
         .form-row-2 .form-group { flex: 1; margin-bottom: 0; }
+        .form-row-2 .form-group input { padding: 10px 14px; }
         
         .date-range-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .date-range-group input { flex: 1; padding: 10px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.8rem; }
@@ -197,32 +210,12 @@
         .stat-label { font-size: 0.7rem; opacity: 0.9; display: block; }
         .stat-value { font-size: 1.2rem; font-weight: bold; display: block; }
         .search-results-list { max-height: 350px; overflow-y: auto; }
-        .search-result-item { 
-            padding: 12px; 
-            border-bottom: 1px solid #eee; 
-            display: flex; 
-            flex-direction: column;
-            gap: 6px;
-        }
-        .search-result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
+        .search-result-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 6px; }
+        .search-result-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .search-result-date { font-size: 0.7rem; color: #666; }
         .search-result-amount { font-weight: bold; color: #0f6b3a; font-size: 0.9rem; }
         .search-result-mode { background: #eef2fa; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; }
-        .search-result-remark { 
-            font-size: 0.65rem; 
-            color: #555; 
-            background: #f5f5f5; 
-            padding: 6px 10px; 
-            border-radius: 12px;
-            margin-top: 4px;
-            word-break: break-word;
-        }
+        .search-result-remark { font-size: 0.65rem; color: #555; background: #f5f5f5; padding: 6px 10px; border-radius: 12px; margin-top: 4px; word-break: break-word; }
         .search-result-remark i { margin-right: 4px; color: #888; }
         .no-remark { color: #aaa; font-style: italic; }
         
@@ -247,6 +240,11 @@
             .date-amount { font-size: 0.75rem; width: 70px; }
             .add-icon-btn { font-size: 1.3rem !important; padding: 0 10px !important; }
             .date-item { padding: 8px 12px; }
+            .expiry-badge { font-size: 0.55rem; padding: 3px 8px; top: 5px; right: 10px; }
+            .form-group input, .form-group select { padding: 10px 60px 10px 12px; }
+            .btn-save-small { padding: 4px 12px; font-size: 0.7rem; }
+            .modal-save-top { top: 10px; right: 12px; }
+            .custom-suggestion-item { padding: 8px 12px; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -320,13 +318,16 @@
 <div id="dateRangeModal" class="modal"><div class="modal-card"><h3>Date Range Excel Backup</h3><div class="date-range-group"><input type="date" id="startDate"><input type="date" id="endDate"></div><div class="modal-buttons"><button id="exportRangeBtn" class="btn-save">Export Excel</button><button id="closeRangeModalBtn" class="btn-cancel">Cancel</button></div></div></div>
 <div id="reminderPopup" class="reminder-popup hide"><i class="fas fa-bell" style="font-size:2rem;"></i><h3>Backup Reminder</h3><p>कृपया अभी JSON Backup लें।</p><button id="reminderBackupBtn" class="reminder-btn">JSON Backup Now</button></div>
 
-<!-- Cash Modal -->
+<!-- Cash Modal - Custom name suggestions (no datalist/dropdown arrow) -->
 <div id="cashModal" class="modal">
     <div class="modal-card">
-        <div class="modal-save-top"><button type="submit" form="cashForm" class="btn-save-small"><i class="fas fa-save"></i> सेव करें</button></div>
+        <div class="modal-save-top"><button type="submit" form="cashForm" class="btn-save-small"><i class="fas fa-save"></i> सेव</button></div>
         <form id="cashForm">
             <input type="hidden" id="cashId">
-            <div class="form-group"><input id="cashName" placeholder="नाम" required></div>
+            <div class="form-group">
+                <input id="cashName" placeholder="नाम" autocomplete="off" required>
+                <div id="cashNameSuggestions" class="custom-suggestions"></div>
+            </div>
             <div class="form-row-2">
                 <div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div>
                 <div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
@@ -337,13 +338,16 @@
     </div>
 </div>
 
-<!-- Loan Modal -->
+<!-- Loan Modal - Custom name suggestions (no datalist/dropdown arrow) -->
 <div id="loanModal" class="modal">
     <div class="modal-card">
-        <div class="modal-save-top"><button type="submit" form="loanForm" class="btn-save-small"><i class="fas fa-save"></i> सेव करें</button></div>
+        <div class="modal-save-top"><button type="submit" form="loanForm" class="btn-save-small"><i class="fas fa-save"></i> सेव</button></div>
         <form id="loanForm">
             <input type="hidden" id="loanId">
-            <div class="form-group"><input id="loanName" placeholder="नाम" required></div>
+            <div class="form-group">
+                <input id="loanName" placeholder="नाम" autocomplete="off" required>
+                <div id="loanNameSuggestions" class="custom-suggestions"></div>
+            </div>
             <div class="form-row-2">
                 <div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div>
                 <div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
@@ -432,7 +436,84 @@
     function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function escape(str){ return String(str||"").replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
     
-    function updateExpiryBadge(expiryDate) { let badge = document.getElementById("expiryBadge"); if(!expiryDate) { badge.style.display = "none"; return; } let today = new Date(), expiry = new Date(expiryDate); today.setHours(0,0,0,0); expiry.setHours(0,0,0,0); let diff = Math.ceil((expiry - today) / (1000*60*60*24)); badge.style.display = "block"; if(diff<=0) badge.innerHTML = "Expired"; else if(diff<=3) badge.innerHTML = `🚨 ${diff} days left`; else if(diff<=7) badge.innerHTML = `🔴 ${diff} days left`; else if(diff<=15) badge.innerHTML = `⚠️ ${diff} days left`; else badge.innerHTML = `✅ ${diff} days left`; }
+    function updateExpiryBadge(expiryDate) { 
+        let badge = document.getElementById("expiryBadge"); 
+        if(!expiryDate) { 
+            badge.style.display = "none"; 
+            return; 
+        } 
+        let today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let expiry = new Date(expiryDate);
+        expiry.setHours(0, 0, 0, 0);
+        let diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+        badge.style.display = "block";
+        badge.classList.remove('warning', 'danger', 'valid');
+        if(diff < 0) { 
+            badge.innerHTML = "❌ Expired"; 
+            badge.classList.add('danger');
+        } else if(diff <= 7) { 
+            badge.innerHTML = `⚠️ ${diff} दिन शेष`; 
+            badge.classList.add('danger');
+        } else if(diff <= 15) { 
+            badge.innerHTML = `🟠 ${diff} दिन शेष`; 
+            badge.classList.add('warning');
+        } else if(diff <= 30) { 
+            badge.innerHTML = `🔵 ${diff} दिन शेष`; 
+            badge.classList.add('warning');
+        } else { 
+            badge.innerHTML = `✅ ${diff} दिन शेष`; 
+            badge.classList.add('valid');
+        }
+    }
+    
+    // Custom name suggestions function - shows only after 3 letters
+    function setupNameSuggestions(inputId, suggestionsId, dataGetter) {
+        let input = document.getElementById(inputId);
+        let suggestionsDiv = document.getElementById(suggestionsId);
+        if(!input || !suggestionsDiv) return;
+        
+        input.addEventListener("input", function(e) {
+            let query = this.value.trim();
+            if(query.length >= 3) {
+                let allNames = dataGetter();
+                let filtered = allNames.filter(name => name.toLowerCase().includes(query.toLowerCase()));
+                filtered = filtered.slice(0, 8);
+                
+                if(filtered.length > 0) {
+                    suggestionsDiv.innerHTML = filtered.map(name => 
+                        `<div class="custom-suggestion-item" data-name="${escape(name)}">${escape(name)}</div>`
+                    ).join("");
+                    suggestionsDiv.classList.add("show");
+                    
+                    document.querySelectorAll(`#${suggestionsId} .custom-suggestion-item`).forEach(item => {
+                        item.addEventListener("click", function() {
+                            input.value = this.getAttribute("data-name");
+                            suggestionsDiv.classList.remove("show");
+                        });
+                    });
+                } else {
+                    suggestionsDiv.classList.remove("show");
+                }
+            } else {
+                suggestionsDiv.classList.remove("show");
+            }
+        });
+        
+        input.addEventListener("blur", function() {
+            setTimeout(() => {
+                suggestionsDiv.classList.remove("show");
+            }, 200);
+        });
+    }
+    
+    function getCashNames() {
+        return [...new Set(cashData.map(c => c.name))].sort();
+    }
+    
+    function getLoanNames() {
+        return [...new Set(loanData.map(l => l.name))].sort();
+    }
     
     async function loadAll() {
         if(!db) return;
@@ -440,6 +521,11 @@
         if(currentUser && currentUser.role !== 'admin') { cashData = allCash.filter(c => c.userId === currentUser.id); loanData = allLoan.filter(l => l.userId === currentUser.id); } else { cashData = allCash; loanData = allLoan; }
         cashDatesSet = new Set(cashData.map(c => c.date)); loanDatesSet = new Set(loanData.map(l => l.date));
         updateTotals(); renderCashDates(); renderLoanDates();
+        
+        // Setup name suggestions after data loads
+        setupNameSuggestions("cashName", "cashNameSuggestions", getCashNames);
+        setupNameSuggestions("loanName", "loanNameSuggestions", getLoanNames);
+        
         let today = getToday();
         if(currentActiveTab === "cash") { selectedCashDate = cashDatesSet.has(today) ? today : (cashDatesSet.size ? Array.from(cashDatesSet)[0] : null); renderCashEntries(); renderCashDates(); }
         else { selectedLoanDate = loanDatesSet.has(today) ? today : (loanDatesSet.size ? Array.from(loanDatesSet)[0] : null); renderLoanEntries(); renderLoanDates(); }
@@ -450,7 +536,6 @@
     
     function renderCashDates() {
         let arr = Array.from(cashDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
-        // Simple + button centered between date and amount
         let html = arr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
         document.getElementById("cashDatesList").innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#cashDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectCashDate(el.getAttribute("data-date")); }); });
@@ -461,14 +546,22 @@
         if(!selectedCashDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = cashData.filter(c=>c.date===selectedCashDate);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई प्रविष्टि नहीं</div>`; container.classList.add("show"); return; }
-        let html = `<table class="cash-table"><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
+        let html = `<table class="cash-table"><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th style="width:60px">कार्य</th></td></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td style="font-weight:500">${escape(e.name)}</td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(e.amount)}</td><td>${e.date}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${e.mode}</span></td><td style="color:#666">${escape(e.remark || '-')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody></table>`;
+        html += `</tbody>}<table>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
     function selectCashDate(date) { selectedCashDate = date; renderCashDates(); renderCashEntries(); }
-    window.openCashForDate = (date) => { document.getElementById("cashId").value = ""; document.getElementById("cashName").value = ""; document.getElementById("cashAmount").value = ""; document.getElementById("cashDate").value = date; document.getElementById("cashMode").value = "Cash"; document.getElementById("cashRemark").value = ""; document.getElementById("cashModal").style.display = "flex"; };
+    window.openCashForDate = (date) => { 
+        document.getElementById("cashId").value = ""; 
+        document.getElementById("cashName").value = ""; 
+        document.getElementById("cashAmount").value = ""; 
+        document.getElementById("cashDate").value = date; 
+        document.getElementById("cashMode").value = "Cash"; 
+        document.getElementById("cashRemark").value = ""; 
+        document.getElementById("cashModal").style.display = "flex"; 
+    };
     window.editCashWithAuth = (id) => { let pwd = prompt("🔐 Edit के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } let c = cashData.find(c=>c.id===id); if(c){ document.getElementById("cashId").value = c.id; document.getElementById("cashName").value = c.name; document.getElementById("cashAmount").value = c.amount; document.getElementById("cashDate").value = c.date; document.getElementById("cashMode").value = c.mode; document.getElementById("cashRemark").value = c.remark || ""; document.getElementById("cashModal").style.display = "flex"; } };
     window.deleteCashWithAuth = async (id) => { let pwd = prompt("🔐 Delete के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } if(confirm("क्या आप यह प्रविष्टि हटाना चाहते हैं?")){ await del("cash",id); } };
     document.getElementById("cashForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("cashId").value; let obj = { name: document.getElementById("cashName").value.trim(), amount: parseFloat(document.getElementById("cashAmount").value), date: document.getElementById("cashDate").value.trim(), mode: document.getElementById("cashMode").value, remark: document.getElementById("cashRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || isNaN(obj.amount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें"); if(id) obj.id = parseInt(id); await save("cash", obj); document.getElementById("cashModal").style.display = "none"; await loadAll(); if(obj.date) selectCashDate(obj.date); });
@@ -478,7 +571,6 @@
     
     function renderLoanDates() {
         let arr = Array.from(loanDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
-        // Simple + button centered between date and amount
         let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
         document.getElementById("loanDatesList").innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectLoanDate(el.getAttribute("data-date")); }); });
@@ -489,14 +581,25 @@
         if(!selectedLoanDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = loanData.filter(l=>l.date===selectedLoanDate);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं</div>`; container.classList.add("show"); return; }
-        let html = `<table class="loan-table"><thead><tr><th>नाम / पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
+        let html = `<table class="loan-table"><thead><tr><th>नाम / पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th style="width:60px">कार्य</th><tr></thead><tbody>`;
         entries.forEach(l => { let {ret,daily} = calcReturnAndDaily(l); let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`; let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`; html += `<tr><td><strong>${escape(l.name)}</strong><br><small style="color:#666; font-size:0.65rem">${escape(l.address)}</small></td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(l.loanAmount)}</td><td style="color:#e67e22">${returnText}</td><td>${perDayText}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${periodText}</span></td><td>${l.date}</td><td style="color:#666">${escape(l.remark||'-')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody></table>`;
+        html += `</tbody>}</table>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
     function selectLoanDate(date) { selectedLoanDate = date; renderLoanDates(); renderLoanEntries(); }
-    window.openLoanForDate = (date) => { document.getElementById("loanId").value = ""; document.getElementById("loanName").value = ""; document.getElementById("loanAddress").value = ""; document.getElementById("loanAmount").value = ""; document.getElementById("loanDate").value = date; document.getElementById("loanPeriod").value = "month"; document.getElementById("percentDiv").style.display = "block"; document.getElementById("interestPercent").value = 10; document.getElementById("loanRemark").value = ""; document.getElementById("loanModal").style.display = "flex"; };
+    window.openLoanForDate = (date) => { 
+        document.getElementById("loanId").value = ""; 
+        document.getElementById("loanName").value = ""; 
+        document.getElementById("loanAddress").value = ""; 
+        document.getElementById("loanAmount").value = ""; 
+        document.getElementById("loanDate").value = date; 
+        document.getElementById("loanPeriod").value = "month"; 
+        document.getElementById("percentDiv").style.display = "block"; 
+        document.getElementById("interestPercent").value = 10; 
+        document.getElementById("loanRemark").value = ""; 
+        document.getElementById("loanModal").style.display = "flex"; 
+    };
     window.editLoanWithAuth = (id) => { let pwd = prompt("🔐 Edit Loan के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } let l = loanData.find(l=>l.id===id); if(l){ document.getElementById("loanId").value = l.id; document.getElementById("loanName").value = l.name; document.getElementById("loanAddress").value = l.address; document.getElementById("loanAmount").value = l.loanAmount; document.getElementById("loanDate").value = l.date; document.getElementById("loanPeriod").value = l.period; if(l.period === "month") { document.getElementById("percentDiv").style.display = "block"; document.getElementById("interestPercent").value = l.interest; } else { document.getElementById("percentDiv").style.display = "none"; } document.getElementById("loanRemark").value = l.remark || ""; document.getElementById("loanModal").style.display = "flex"; } };
     window.deleteLoanWithAuth = async (id) => { let pwd = prompt("🔐 Delete Loan के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } if(confirm("क्या आप यह लोन हटाना चाहते हैं?")){ await del("loan",id); } };
     document.getElementById("loanForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("loanId").value; let period = document.getElementById("loanPeriod").value; let obj = { name: document.getElementById("loanName").value.trim(), address: document.getElementById("loanAddress").value.trim(), loanAmount: parseFloat(document.getElementById("loanAmount").value), date: document.getElementById("loanDate").value.trim(), period: period, remark: document.getElementById("loanRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || !obj.address || isNaN(obj.loanAmount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें"); if(period === "month") obj.interest = parseFloat(document.getElementById("interestPercent").value); if(id) obj.id = parseInt(id); await save("loan", obj); document.getElementById("loanModal").style.display = "none"; await loadAll(); if(obj.date) selectLoanDate(obj.date); });
@@ -533,7 +636,6 @@
     
     async function fetchUsersFromGitHub() { document.getElementById("networkStatus").innerText = "🔄 Connecting..."; try { let response = await fetch(GITHUB_USERS_URL); if(!response.ok) throw new Error(); let data = await response.json(); localStorage.setItem("githubUsersCache", JSON.stringify({ data, timestamp: Date.now() })); document.getElementById("networkStatus").innerText = "✅ Online"; setTimeout(() => { document.getElementById("networkStatus").innerText = ""; }, 2000); return data; } catch(e) { let cached = localStorage.getItem("githubUsersCache"); if(cached) { let cacheData = JSON.parse(cached); document.getElementById("networkStatus").innerHTML = "📡 Offline mode"; setTimeout(() => { document.getElementById("networkStatus").innerHTML = ""; }, 3000); return cacheData.data; } document.getElementById("networkStatus").innerText = "❌ No internet!"; return null; } }
     
-    // SEARCH FUNCTIONS - Filter by active tab with REMARK
     let currentSearchName = "";
     let currentFilteredEntries = [];
     
@@ -632,7 +734,19 @@
     async function checkLogin() {
         let id = document.getElementById("loginId").value.trim(), password = document.getElementById("loginPassword").value.trim();
         if(!id || !password) { document.getElementById("loginError").innerText = "❌ ID और Password दोनों भरें!"; return; }
-        if(id.toLowerCase() === 'hindu' && password === 'Lion') { currentUser = { id: 'hindu', name: 'हिंदू', role: 'admin', expiry: null }; localStorage.setItem("currentUser", JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainApp").classList.remove("hide-app"); updateExpiryBadge(null); await openDB(); await loadAll(); await loadNotes(); await syncFromSupabase(true); checkBackupReminder(); return; }
+        if(id.toLowerCase() === 'hindu' && password === 'Lion') { 
+            currentUser = { id: 'hindu', name: 'हिंदू', role: 'admin', expiry: null }; 
+            localStorage.setItem("currentUser", JSON.stringify(currentUser)); 
+            document.getElementById("loginOverlay").style.display = "none"; 
+            document.getElementById("mainApp").classList.remove("hide-app"); 
+            updateExpiryBadge(null); 
+            await openDB(); 
+            await loadAll(); 
+            await loadNotes(); 
+            await syncFromSupabase(true); 
+            checkBackupReminder(); 
+            return; 
+        }
         document.getElementById("loginLoading").innerText = "⏳ Verifying...";
         let usersData = await fetchUsersFromGitHub();
         if(!usersData || !usersData.users) { document.getElementById("loginError").innerText = "❌ Unable to verify! Check internet."; document.getElementById("loginLoading").innerText = ""; return; }
@@ -640,10 +754,45 @@
         if(!user || user.password !== password) { document.getElementById("loginError").innerText = "❌ Invalid ID or Password!"; document.getElementById("loginLoading").innerText = ""; return; }
         let today = new Date().toISOString().slice(0,10);
         if(user.expiry < today) { document.getElementById("loginError").innerText = "❌ License Expired! Contact Admin."; document.getElementById("loginLoading").innerText = ""; return; }
-        currentUser = { id: id, name: user.name, role: user.role, expiry: user.expiry }; localStorage.setItem("currentUser", JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainApp").classList.remove("hide-app"); updateExpiryBadge(currentUser.expiry); await openDB(); await loadAll(); await loadNotes(); await syncFromSupabase(true); checkBackupReminder(); document.getElementById("loginLoading").innerText = "";
+        currentUser = { id: id, name: user.name, role: user.role, expiry: user.expiry }; 
+        localStorage.setItem("currentUser", JSON.stringify(currentUser)); 
+        document.getElementById("loginOverlay").style.display = "none"; 
+        document.getElementById("mainApp").classList.remove("hide-app"); 
+        updateExpiryBadge(currentUser.expiry);
+        await openDB(); 
+        await loadAll(); 
+        await loadNotes(); 
+        await syncFromSupabase(true); 
+        checkBackupReminder(); 
+        document.getElementById("loginLoading").innerText = "";
     }
     
-    function checkSavedLogin() { let saved = localStorage.getItem("currentUser"); if(saved) { let user = JSON.parse(saved); if(user.id === 'hindu') { currentUser = user; document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainApp").classList.remove("hide-app"); updateExpiryBadge(null); openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); return true; } let today = new Date().toISOString().slice(0,10); if(user.expiry >= today) { currentUser = user; document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainApp").classList.remove("hide-app"); updateExpiryBadge(currentUser.expiry); openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); return true; } else { localStorage.removeItem("currentUser"); } } return false; }
+    function checkSavedLogin() { 
+        let saved = localStorage.getItem("currentUser"); 
+        if(saved) { 
+            let user = JSON.parse(saved); 
+            if(user.id === 'hindu') { 
+                currentUser = user; 
+                document.getElementById("loginOverlay").style.display = "none"; 
+                document.getElementById("mainApp").classList.remove("hide-app"); 
+                updateExpiryBadge(null); 
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); 
+                return true; 
+            } 
+            let today = new Date().toISOString().slice(0,10); 
+            if(user.expiry >= today) { 
+                currentUser = user; 
+                document.getElementById("loginOverlay").style.display = "none"; 
+                document.getElementById("mainApp").classList.remove("hide-app"); 
+                updateExpiryBadge(currentUser.expiry);
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); 
+                return true; 
+            } else { 
+                localStorage.removeItem("currentUser"); 
+            } 
+        } 
+        return false; 
+    }
     
     document.addEventListener("visibilitychange", () => { if(!document.hidden && navigator.onLine && currentUser) { syncFromSupabase(false); } });
     setInterval(() => { if(navigator.onLine && currentUser && document.visibilityState === "visible") { syncFromSupabase(false); } }, 120000);
