@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Daily Collection – Hindu Lion Brothers</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -546,9 +547,9 @@
         if(!selectedCashDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = cashData.filter(c=>c.date===selectedCashDate);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई प्रविष्टि नहीं</div>`; container.classList.add("show"); return; }
-        let html = `<table class="cash-table"><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th style="width:60px">कार्य</th></td></thead><tbody>`;
+        let html = `<table class="cash-table"><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td style="font-weight:500">${escape(e.name)}</td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(e.amount)}</td><td>${e.date}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${e.mode}</span></td><td style="color:#666">${escape(e.remark || '-')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody>}<table>`;
+        html += `</tbody></table>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -581,9 +582,9 @@
         if(!selectedLoanDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = loanData.filter(l=>l.date===selectedLoanDate);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं</div>`; container.classList.add("show"); return; }
-        let html = `<table class="loan-table"><thead><tr><th>नाम / पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th style="width:60px">कार्य</th><tr></thead><tbody>`;
+        let html = `<table class="loan-table"><thead><tr><th>नाम / पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
         entries.forEach(l => { let {ret,daily} = calcReturnAndDaily(l); let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`; let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`; html += `<tr><td><strong>${escape(l.name)}</strong><br><small style="color:#666; font-size:0.65rem">${escape(l.address)}</small></td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(l.loanAmount)}</td><td style="color:#e67e22">${returnText}</td><td>${perDayText}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${periodText}</span></td><td>${l.date}</td><td style="color:#666">${escape(l.remark||'-')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody>}</table>`;
+        html += `</tbody></table>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -814,6 +815,33 @@
     
     initSupabase();
     if(!checkSavedLogin()) { document.getElementById("loginOverlay").style.display = "flex"; document.getElementById("mainApp").classList.add("hide-app"); }
+    
+    // ========== PWA SERVICE WORKER REGISTRATION (कोई बदलाव नहीं, बस SW रजिस्टर कर रहा है) ==========
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./sw.js')
+                .then(function(reg) {
+                    console.log('✅ Service Worker registered successfully:', reg);
+                    if ('sync' in reg) {
+                        reg.sync.register('sync-data').catch(function(e) { console.log('Background sync not supported', e); });
+                    }
+                })
+                .catch(function(err) {
+                    console.error('❌ Service Worker registration failed:', err);
+                });
+        });
+        
+        navigator.serviceWorker.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'ONLINE') {
+                showToast('📡 इंटरनेट कनेक्ट हो गया!');
+                if (typeof syncFromSupabase === 'function') {
+                    syncFromSupabase(false);
+                }
+            }
+        });
+    }
+    // ========== END OF SERVICE WORKER REGISTRATION ==========
+    
 </script>
 </body>
 </html>
