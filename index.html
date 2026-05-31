@@ -108,6 +108,7 @@
         .backup-btn, .restore-btn, .range-backup-btn { background: white; border: none; padding: 6px 12px; border-radius: 40px; font-weight: bold; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .range-backup-btn { background: #e67e22; color: white; }
         .restore-btn { background: #eef2fa; }
+        .force-push-btn { background: #e67e22; color: white; border: none; padding: 6px 12px; border-radius: 40px; font-weight: bold; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
         
         .date-list { background: white; border-radius: 20px; padding: 5px; margin-bottom: 12px; max-height: 180px; overflow-y: auto; }
         .date-item { padding: 12px 16px; border-bottom: 1px solid #eef2f5; cursor: pointer; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
@@ -301,6 +302,7 @@
         <button class="backup-btn" id="excelBackupBtn"><i class="fas fa-file-excel"></i> Excel</button>
         <button class="range-backup-btn" id="rangeBackupBtn"><i class="fas fa-calendar-range"></i> Date Range Excel</button>
         <button class="restore-btn" id="restoreBtn"><i class="fas fa-upload"></i> Restore</button>
+        <button class="force-push-btn" id="forcePushBtn" onclick="forcePushToSupabase()" title="Pending data Supabase par bhejo"><i class="fas fa-cloud-upload-alt"></i> <span id="forcePushLabel">PUSH</span></button>
         <input type="file" id="restoreFileInput" accept=".json" style="display:none;">
     </div>
 
@@ -386,6 +388,116 @@
     
     function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
     function initSupabase() { if (typeof supabase === 'undefined') { setTimeout(initSupabase, 500); return; } supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+
+    // ========== PENDING CHANGES TRACKER ==========
+    const PENDING_KEY = 'hlb_daily_pending';
+
+    function _loadPending() {
+        try {
+            const raw = localStorage.getItem(PENDING_KEY);
+            if (!raw) return { cash: new Set(), loan: new Set(), notes: new Set() };
+            const p = JSON.parse(raw);
+            return { cash: new Set(p.cash||[]), loan: new Set(p.loan||[]), notes: new Set(p.notes||[]) };
+        } catch(e) { return { cash: new Set(), loan: new Set(), notes: new Set() }; }
+    }
+
+    function _savePending() {
+        try {
+            localStorage.setItem(PENDING_KEY, JSON.stringify({
+                cash:  [..._pendingChanges.cash],
+                loan:  [..._pendingChanges.loan],
+                notes: [..._pendingChanges.notes],
+            }));
+        } catch(e) {}
+        updatePendingCount();
+    }
+
+    let _pendingChanges = _loadPending();
+
+    function updatePendingCount() {
+        const btn = document.getElementById('forcePushBtn');
+        const label = document.getElementById('forcePushLabel');
+        if (!btn || !label) return;
+        const total = _pendingChanges.cash.size + _pendingChanges.loan.size + _pendingChanges.notes.size;
+        if (total > 0) {
+            label.innerText = `PUSH (${total})`;
+            btn.style.background = '#e74c3c';
+            btn.title = `${total} records Supabase par save nahi hue — click karke push karo`;
+        } else {
+            label.innerText = 'PUSH';
+            btn.style.background = '#e67e22';
+            btn.title = 'Sab kuch sync hai';
+        }
+    }
+
+    async function forcePushToSupabase() {
+        if (!supabaseClient) { alert('❌ Supabase connect nahi hai!'); return; }
+        if (!navigator.onLine) { alert('❌ Internet nahi hai!'); return; }
+        if (!currentUser) { alert('❌ Pehle login karein!'); return; }
+
+        // Pending IDs se data nikalo — nahi mila to poora load karo
+        const pendingCashIds = [..._pendingChanges.cash];
+        const pendingLoanIds = [..._pendingChanges.loan];
+
+        let finalCash = pendingCashIds.length > 0 ? cashData.filter(c => pendingCashIds.includes(String(c.id))) : [];
+        let finalLoan = pendingLoanIds.length > 0 ? loanData.filter(l => pendingLoanIds.includes(String(l.id))) : [];
+
+        // Fallback — agar ID memory mein nahi mili
+        if (pendingCashIds.length > 0 && finalCash.length === 0) finalCash = cashData;
+        if (pendingLoanIds.length > 0 && finalLoan.length === 0) finalLoan = loanData;
+
+        const total = finalCash.length + finalLoan.length + _pendingChanges.notes.size;
+
+        if (total === 0) { showToast('✅ Sab kuch already sync hai!'); return; }
+
+        if (!confirm(`⬆️ FORCE PUSH\n\n💰 Cash: ${finalCash.length}\n📊 Loan: ${finalLoan.length}\n\nTotal: ${total} records\n\nJari rakhen?`)) return;
+
+        const btn = document.getElementById('forcePushBtn');
+        const label = document.getElementById('forcePushLabel');
+        if (btn) { btn.disabled = true; if(label) label.innerText = '⏳...'; }
+        updateSyncStatus('pending', '⏳');
+
+        try {
+            let successCount = 0, errorCount = 0;
+
+            // Cash push
+            for (let c of finalCash) {
+                const supItem = { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode||'Cash', remark: c.remark||'', userid: c.userId||currentUser.id, username: c.userName||currentUser.name };
+                const { error } = await supabaseClient.from('daily_cash').upsert(supItem, { onConflict: 'id' });
+                if (error) { errorCount++; } else { successCount++; _pendingChanges.cash.delete(String(c.id)); }
+            }
+
+            // Loan push
+            for (let l of finalLoan) {
+                const supItem = { id: l.id, name: l.name, address: l.address||'', loanamount: l.loanAmount, date: l.date, period: l.period, interest: l.interest||null, remark: l.remark||'', userid: l.userId||currentUser.id, username: l.userName||currentUser.name };
+                const { error } = await supabaseClient.from('daily_loan').upsert(supItem, { onConflict: 'id' });
+                if (error) { errorCount++; } else { successCount++; _pendingChanges.loan.delete(String(l.id)); }
+            }
+
+            // Notes push
+            if (_pendingChanges.notes.size > 0) {
+                const { error } = await supabaseClient.from('daily_notes').upsert({ id: `noteData_${currentUser.id}`, counts: noteCounts, userid: currentUser.id }, { onConflict: 'id' });
+                if (!error) { _pendingChanges.notes.clear(); successCount++; }
+                else errorCount++;
+            }
+
+            _savePending();
+
+            if (errorCount === 0) {
+                updateSyncStatus('synced', '✅');
+                showToast(`✅ FORCE PUSH! ${successCount} records save ho gaye!`);
+            } else {
+                updateSyncStatus('error', '❌');
+                showToast(`⚠️ ${successCount} save, ${errorCount} error`);
+            }
+
+        } catch(e) {
+            updateSyncStatus('error', '❌');
+            showToast('❌ Push failed: ' + e.message);
+        } finally {
+            if (btn) { btn.disabled = false; updatePendingCount(); }
+        }
+    }
     function updateSyncStatus(status, msg) { let el = document.getElementById('syncStatus'); if(el) { el.className = 'sync-status ' + status; el.innerHTML = msg || (status==='synced'?'✅':status==='pending'?'⏳':'❌'); } }
     async function saveToIndexedDBOnly(store, item) { let tx = db.transaction(store, "readwrite"); tx.objectStore(store).put(item); await new Promise(r => tx.oncomplete = r); }
     
@@ -410,9 +522,24 @@
                 else if(store === 'loan') supItem = { id: item.id, name: item.name, address: item.address || '', loanamount: item.loanAmount, date: item.date, period: item.period, interest: item.interest || null, remark: item.remark || '', userid: item.userId || currentUser.id, username: item.userName || currentUser.name };
                 else supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
                 const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
-                if(error) { showToast("⚠️ Saved locally only"); updateSyncStatus('error','❌'); } else { showToast("✅ Saved to cloud"); updateSyncStatus('synced','✅'); }
-            } catch(e) { updateSyncStatus('error','❌'); }
-        } else { showToast("📱 Offline mode - saved locally"); updateSyncStatus('pending','⏳'); }
+                if(error) {
+                    // Sync nahi hua — pending mein add karo
+                    if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
+                    showToast("⚠️ Saved locally only"); updateSyncStatus('error','❌');
+                } else {
+                    // Sync hua — pending se hata do
+                    if(_pendingChanges[store]) { _pendingChanges[store].delete(String(item.id)); _savePending(); }
+                    showToast("✅ Saved to cloud"); updateSyncStatus('synced','✅');
+                }
+            } catch(e) {
+                if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
+                updateSyncStatus('error','❌');
+            }
+        } else {
+            // Offline — pending mein add karo
+            if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
+            showToast("📱 Offline mode - saved locally"); updateSyncStatus('pending','⏳');
+        }
     }
     
     async function syncFromSupabase(forceRefresh = false) {
@@ -613,7 +740,7 @@
     document.getElementById("exportRangeBtn").onclick = async () => { let start = document.getElementById("startDate").value, end = document.getElementById("endDate").value; if(!start || !end) { alert("कृपया Start Date और End Date दोनों चुनें!"); return; } let filteredCash = cashData.filter(c => { let d = formatDateForCompare(c.date); return d >= start && d <= end; }); let filteredLoan = loanData.filter(l => { let d = formatDateForCompare(l.date); return d >= start && d <= end; }); if(filteredCash.length===0 && filteredLoan.length===0) { alert("इस दायरे में कोई डेटा नहीं है!"); return; } let cashSheet = filteredCash.map(c=>({Type:"Cash", Name:c.name, Amount:c.amount, Date:c.date, Mode:c.mode, Remark:c.remark||""})); let loanSheet = filteredLoan.map(l=>({Type:"Loan", Name:l.name, Address:l.address, "Loan Amount":l.loanAmount, "Return Amount":(l.period==='month'?"":(l.loanAmount*1.2).toFixed(2)), "Per Day":(l.period!=='month'?((l.loanAmount*1.2)/l.period).toFixed(0):""), "Period/Interest":l.period==='month'?`${l.interest}%`:`${l.period} days`, Date:l.date, Remark:l.remark||""})); let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws1, "Cash"); XLSX.utils.book_append_sheet(wb, ws2, "Loan"); let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"}); let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${start}_to_${end}.xlsx`; a.click(); URL.revokeObjectURL(a.href); document.getElementById("dateRangeModal").style.display = "none"; showToast(`📊 ${filteredCash.length} Cash, ${filteredLoan.length} Loan entries exported`); };
     
     async function loadNotes() { if(!db) return; let tx = db.transaction("notes", "readonly"); let req = tx.objectStore("notes").get(`noteData_${currentUser.id}`); req.onsuccess = () => { if(req.result) noteCounts = req.result.counts || { 500:"",200:"",100:"",50:"",20:"",10:"",5:"" }; renderNotePopup(); }; }
-    async function saveNotesToDB() { await save("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); showToast("✅ Note counts saved"); }
+    async function saveNotesToDB() { await save("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); _pendingChanges.notes.add('notes'); _savePending(); showToast("✅ Note counts saved"); }
     function calculateNoteTotal() { let total=0; for(let d of denoms) { let val=parseInt(noteCounts[d]); if(!isNaN(val) && val>0) total+=val*d; } return total; }
     function renderNotePopup() { let container = document.getElementById("noteGrid"); let html = ''; for(let d of denoms) { let count = noteCounts[d] === "" ? "" : noteCounts[d]; let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0; html += `<div class="note-row-simple"><span class="note-label-simple">₹${d}</span><input type="number" class="note-input-simple" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1"><span class="note-value-simple">₹${value.toLocaleString('en-IN')}</span></div>`; } container.innerHTML = html; document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN'); document.querySelectorAll(".note-input-simple").forEach(inp => { inp.addEventListener("input", (e) => { let denom = parseInt(e.target.dataset.denom); let val = e.target.value === "" ? "" : parseInt(e.target.value); if(isNaN(val)) val = ""; noteCounts[denom] = val === "" ? "" : val; let valNum = (val === "" || isNaN(val)) ? 0 : val; let vs = e.target.parentElement.querySelector(".note-value-simple"); if(vs) vs.innerText = `₹${(valNum * denom).toLocaleString('en-IN')}`; document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN'); }); }); }
     function resetNoteFields() { for(let d of denoms) noteCounts[d] = ""; renderNotePopup(); }
@@ -777,7 +904,7 @@
                 document.getElementById("loginOverlay").style.display = "none"; 
                 document.getElementById("mainApp").classList.remove("hide-app"); 
                 updateExpiryBadge(null); 
-                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); 
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); updatePendingCount(); }); 
                 return true; 
             } 
             let today = new Date().toISOString().slice(0,10); 
@@ -786,7 +913,7 @@
                 document.getElementById("loginOverlay").style.display = "none"; 
                 document.getElementById("mainApp").classList.remove("hide-app"); 
                 updateExpiryBadge(currentUser.expiry);
-                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); }); 
+                openDB().then(() => { loadAll(); loadNotes(); if(supabaseClient) syncFromSupabase(true); checkBackupReminder(); updatePendingCount(); }); 
                 return true; 
             } else { 
                 localStorage.removeItem("currentUser"); 
