@@ -13,78 +13,24 @@
         body { background: #eef2f5; font-family: 'Segoe UI', sans-serif; padding: 10px; font-size: 13px; }
         .container { max-width: 600px; margin: 0 auto; }
         .header { background: linear-gradient(135deg, #0f6b3a, #0a4f2c); color: white; border-radius: 20px; padding: 14px; text-align: center; margin-bottom: 15px; position: relative; min-height: 80px; }
-        
-        .coin-dashboard-wrapper {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            z-index: 10;
-        }
-        
-        .coin-dashboard-wrapper .coin-outer {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, #c9982e, #f5d76e, #c9982e, #e8c547, #b8860b, #f5d76e, #c9982e, #e8c547, #b8860b, #f5d76e, #c9982e, #e8c547, #b8860b, #c9982e);
-            box-shadow: 0 0 0 2px #a07618, 0 4px 10px rgba(0,0,0,0.3), inset 0 0 10px rgba(0,0,0,0.1);
-        }
-        
-        .coin-dashboard-wrapper .coin-outer::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border-radius: 50%;
-            background: repeating-conic-gradient(#d4a830 0deg 3deg, #b8860b 3deg 6deg);
-            mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%);
-            -webkit-mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%);
-        }
-        
-        .coin-dashboard-wrapper .coin-inner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 38% 35%, #f0f0f0 0%, #d9d9d9 25%, #c0c0c0 50%, #a8a8a8 75%, #909090 100%);
-            box-shadow: inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.25), 0 0 0 1px #a07618;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
+        .coin-dashboard-wrapper { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; cursor: pointer; z-index: 10; }
+        .coin-dashboard-wrapper .coin-outer { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, #c9982e, #f5d76e, #c9982e, #e8c547, #b8860b, #f5d76e, #c9982e, #e8c547, #b8860b, #f5d76e, #c9982e, #e8c547, #b8860b, #c9982e); box-shadow: 0 0 0 2px #a07618, 0 4px 10px rgba(0,0,0,0.3), inset 0 0 10px rgba(0,0,0,0.1); }
+        .coin-dashboard-wrapper .coin-outer::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: repeating-conic-gradient(#d4a830 0deg 3deg, #b8860b 3deg 6deg); mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%); -webkit-mask: radial-gradient(circle, transparent 56%, black 57%, black 63%, transparent 64%); }
+        .coin-dashboard-wrapper .coin-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 38% 35%, #f0f0f0 0%, #d9d9d9 25%, #c0c0c0 50%, #a8a8a8 75%, #909090 100%); box-shadow: inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.25), 0 0 0 1px #a07618; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .coin-dashboard-wrapper .rupee-symbol { font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #3a3a3a; line-height: 1; text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.4), -0.3px -0.3px 0 rgba(0,0,0,0.15); }
         .coin-dashboard-wrapper .coin-value { font-family: 'Noto Sans', 'Segoe UI', Arial, sans-serif; font-size: 10px; font-weight: 600; color: #4a4a4a; line-height: 1; text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.3); }
         .coin-dashboard-wrapper .coin-shine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 25%, transparent 50%); pointer-events: none; }
-        
         .sync-status { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 10px; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 20px; }
         .sync-status.synced { background: #27ae60; }
         .sync-status.pending { background: #f39c12; }
         .sync-status.error { background: #e74c3c; }
         .header h1 { font-size: 1.3rem; font-weight: 600; }
         .header p { font-size: 0.7rem; opacity: 0.9; }
-        .expiry-badge { 
-            position: absolute; 
-            right: 16px; 
-            top: 8px; 
-            background: rgba(0,0,0,0.6); 
-            padding: 4px 10px; 
-            border-radius: 20px; 
-            font-size: 0.65rem; 
-            font-weight: bold;
-            z-index: 5;
-        }
+        .expiry-badge { position: absolute; right: 16px; top: 8px; background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: bold; z-index: 5; }
         .expiry-badge.warning { background: #e67e22; animation: pulse 1s infinite; }
         .expiry-badge.danger { background: #e74c3c; animation: pulse 0.5s infinite; }
         .expiry-badge.valid { background: #27ae60; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        
         .tab-bar { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: white; border: none; padding: 10px 0; border-radius: 40px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
         .tab-btn.active { background: #0f6b3a; color: white; }
@@ -109,7 +55,6 @@
         .range-backup-btn { background: #e67e22; color: white; }
         .restore-btn { background: #eef2fa; }
         .force-push-btn { background: #e67e22; color: white; border: none; padding: 6px 12px; border-radius: 40px; font-weight: bold; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-        
         .date-list { background: white; border-radius: 20px; padding: 5px; margin-bottom: 12px; max-height: 180px; overflow-y: auto; }
         .date-item { padding: 12px 16px; border-bottom: 1px solid #eef2f5; cursor: pointer; font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
         .date-text { display: flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 0.85rem; width: 110px; }
@@ -118,7 +63,6 @@
         .add-icon-btn { background: none !important; border: none !important; color: #e74c3c !important; font-size: 1.6rem !important; font-weight: 900 !important; width: auto !important; height: auto !important; border-radius: 0 !important; padding: 0 20px !important; margin: 0 !important; box-shadow: none !important; cursor: pointer; line-height: 1; flex-shrink: 0; }
         .add-icon-btn:active { opacity: 0.7; transform: scale(0.95); }
         .active-date { background: #e0f2fe; border-left: 3px solid #2563eb; }
-        
         .entry-table { background: white; border-radius: 20px; padding: 10px; margin-top: 6px; overflow-x: auto; display: none; }
         .entry-table.show { display: block; }
         table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 580px; }
@@ -127,67 +71,27 @@
         td { color: #444; }
         .btn-icon { background: none; border: none; margin: 0 3px; cursor: pointer; font-size: 0.9rem; padding: 4px 6px; border-radius: 20px; transition: all 0.2s; }
         .btn-icon:hover { background: #eef2f5; }
-        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: flex-start; justify-content: center; z-index: 1000; overflow-y: auto; padding-top: 5%; }
         .modal-card { background: white; width: 95%; max-width: 380px; border-radius: 24px; padding: 16px; margin: 10px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
         .modal-card h3 { display: none; }
         .modal-save-top { position: absolute; top: 12px; right: 16px; z-index: 10; }
         .btn-save-small { background: #0f6b3a; color: white; border: none; padding: 6px 16px; border-radius: 30px; font-weight: bold; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-save-small i { font-size: 0.7rem; }
-        
         .form-group { margin-bottom: 12px; position: relative; }
-        .form-group input, .form-group select { 
-            width: 100%; 
-            padding: 10px 70px 10px 14px; 
-            border-radius: 24px; 
-            border: 1px solid #ddd; 
-            font-size: 0.85rem; 
-            background: white; 
-        }
-        
-        /* Custom Name Suggestions Box - No dropdown arrow */
-        .custom-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-            margin-top: 4px;
-        }
-        .custom-suggestions.show {
-            display: block;
-        }
-        .custom-suggestion-item {
-            padding: 10px 14px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            font-size: 0.8rem;
-            transition: background 0.2s;
-        }
-        .custom-suggestion-item:hover {
-            background: #e8f5e9;
-        }
-        .custom-suggestion-item:last-child {
-            border-bottom: none;
-        }
-        
+        .form-group input, .form-group select { width: 100%; padding: 10px 70px 10px 14px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.85rem; background: white; }
+        .custom-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; }
+        .custom-suggestions.show { display: block; }
+        .custom-suggestion-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.8rem; transition: background 0.2s; }
+        .custom-suggestion-item:hover { background: #e8f5e9; }
+        .custom-suggestion-item:last-child { border-bottom: none; }
         .form-group input:focus { outline: none; border-color: #0f6b3a; }
-        
         .form-row-2 { display: flex; gap: 10px; margin-bottom: 12px; }
         .form-row-2 .form-group { flex: 1; margin-bottom: 0; }
         .form-row-2 .form-group input { padding: 10px 14px; }
-        
         .date-range-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .date-range-group input { flex: 1; padding: 10px; border-radius: 24px; border: 1px solid #ddd; font-size: 0.8rem; }
         .modal-buttons { display: flex; justify-content: center; margin-top: 15px; gap: 10px; flex-wrap: wrap; }
         .btn-cancel { background: #95a5a6; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
-        
         .note-list-simple { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 65vh; overflow-y: auto; }
         .note-row-simple { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 10px 12px; border-radius: 12px; gap: 8px; flex-wrap: wrap; }
         .note-label-simple { font-weight: 700; font-size: 0.9rem; min-width: 45px; color: #333; }
@@ -200,7 +104,6 @@
         .note-modal-buttons-simple button:first-child { background: #e74c3c; color: white; }
         .note-modal-buttons-simple button:nth-child(2) { background: #0f6b3a; color: white; }
         .note-modal-buttons-simple button:last-child { background: #95a5a6; color: white; }
-        
         .search-results-section { background: white; border-radius: 20px; padding: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: none; }
         .search-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #0f6b3a; }
         .search-header h3 { font-size: 0.9rem; color: #0f6b3a; margin: 0; }
@@ -220,7 +123,6 @@
         .search-result-remark { font-size: 0.65rem; color: #555; background: #f5f5f5; padding: 6px 10px; border-radius: 12px; margin-top: 4px; word-break: break-word; }
         .search-result-remark i { margin-right: 4px; color: #888; }
         .no-remark { color: #aaa; font-style: italic; }
-        
         .reminder-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 2500; text-align: center; padding: 25px; width: 85%; max-width: 320px; border: 2px solid #0f6b3a; }
         .reminder-popup.hide { display: none; }
         .reminder-btn { background: #0f6b3a; color: white; border: none; padding: 12px 20px; border-radius: 40px; margin-top: 15px; font-weight: bold; cursor: pointer; width: 100%; }
@@ -236,7 +138,6 @@
         .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e2a32; color: white; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.75rem; z-index: 1200; animation: fadeInOut 2s ease-in-out; }
         .hide-app { display: none; }
         @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(20px); } 15% { opacity: 1; transform: translateY(0); } 85% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(20px); } }
-        
         @media (max-width: 480px) {
             .date-text { font-size: 0.7rem; width: 95px; }
             .date-amount { font-size: 0.75rem; width: 70px; }
@@ -389,7 +290,6 @@
     function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
     function initSupabase() { if (typeof supabase === 'undefined') { setTimeout(initSupabase, 500); return; } supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
 
-    // PENDING CHANGES TRACKER
     const PENDING_KEY = 'hlb_daily_pending';
 
     function _loadPending() {
@@ -634,7 +534,7 @@
         return [...new Set(loanData.map(l => l.name))].sort();
     }
     
-    // ✅ UPDATED loadAll() - Current date select hoga dono tabs mein
+    // ✅ FINAL FIX - Latest date always selected (not stuck on 24/05/2026)
     async function loadAll() {
         if(!db) return;
         let allCash = await getAll("cash"), allLoan = await getAll("loan");
@@ -648,41 +548,46 @@
         cashDatesSet = new Set(cashData.map(c => c.date));
         loanDatesSet = new Set(loanData.map(l => l.date));
         updateTotals();
-        renderCashDates();
-        renderLoanDates();
+        
+        // Get sorted dates (newest first)
+        let sortedCashDates = Array.from(cashDatesSet).sort((a,b) => {
+            let da = a.split('/').reverse().join('-');
+            let db = b.split('/').reverse().join('-');
+            return db.localeCompare(da);
+        });
+        let sortedLoanDates = Array.from(loanDatesSet).sort((a,b) => {
+            let da = a.split('/').reverse().join('-');
+            let db = b.split('/').reverse().join('-');
+            return db.localeCompare(da);
+        });
+        
+        // Select LATEST date (newest first)
+        if(currentActiveTab === "cash") {
+            selectedCashDate = sortedCashDates.length > 0 ? sortedCashDates[0] : null;
+            renderCashDates();
+            renderCashEntries();
+        } else {
+            selectedLoanDate = sortedLoanDates.length > 0 ? sortedLoanDates[0] : null;
+            renderLoanDates();
+            renderLoanEntries();
+        }
+        
+        renderCashDates();  // re-render to show active state
+        renderLoanDates();  // re-render to show active state
 
         setupNameSuggestions("cashName", "cashNameSuggestions", getCashNames);
         setupNameSuggestions("loanName", "loanNameSuggestions", getLoanNames);
-
-        let today = getToday();
-
-        // Cash tab - current date select karo agar exist karta hai
-        if(currentActiveTab === "cash") {
-            if(cashDatesSet.has(today)) {
-                selectedCashDate = today;
-            } else {
-                selectedCashDate = cashDatesSet.size ? Array.from(cashDatesSet)[0] : null;
-            }
-            renderCashEntries();
-            renderCashDates();
-        }
-        // Loan tab - current date select karo agar exist karta hai
-        else {
-            if(loanDatesSet.has(today)) {
-                selectedLoanDate = today;
-            } else {
-                selectedLoanDate = loanDatesSet.size ? Array.from(loanDatesSet)[0] : null;
-            }
-            renderLoanEntries();
-            renderLoanDates();
-        }
     }
     
     function updateTotals() { let tc = cashData.reduce((s,c)=>s+c.amount,0); let tl = loanData.reduce((s,l)=>s+l.loanAmount,0); document.getElementById("cashTotalAmount").innerHTML = `₹${formatAmount(tc)}`; document.getElementById("loanTotalAmount").innerHTML = `₹${formatAmount(tl)}`; }
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     
     function renderCashDates() {
-        let arr = Array.from(cashDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
+        let arr = Array.from(cashDatesSet).sort((a,b)=>{
+            let da = a.split('/').reverse().join('-');
+            let db = b.split('/').reverse().join('-');
+            return db.localeCompare(da);
+        });
         let html = arr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
         document.getElementById("cashDatesList").innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#cashDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectCashDate(el.getAttribute("data-date")); }); });
@@ -717,7 +622,11 @@
     function calcReturnAndDaily(l){ if(l.period === 'month'){ let ret = l.loanAmount + (l.loanAmount * l.interest / 100); return {ret, daily: null}; } else { let ret = l.loanAmount * 1.20; return {ret, daily: ret / l.period}; } }
     
     function renderLoanDates() {
-        let arr = Array.from(loanDatesSet).sort((a,b)=>new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
+        let arr = Array.from(loanDatesSet).sort((a,b)=>{
+            let da = a.split('/').reverse().join('-');
+            let db = b.split('/').reverse().join('-');
+            return db.localeCompare(da);
+        });
         let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
         document.getElementById("loanDatesList").innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectLoanDate(el.getAttribute("data-date")); }); });
@@ -962,7 +871,6 @@
     initSupabase();
     if(!checkSavedLogin()) { document.getElementById("loginOverlay").style.display = "flex"; document.getElementById("mainApp").classList.add("hide-app"); }
     
-    // PWA SERVICE WORKER REGISTRATION
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('./sw.js')
