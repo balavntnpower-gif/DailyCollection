@@ -321,7 +321,7 @@
 <div id="dateRangeModal" class="modal"><div class="modal-card"><h3>Date Range Excel Backup</h3><div class="date-range-group"><input type="date" id="startDate"><input type="date" id="endDate"></div><div class="modal-buttons"><button id="exportRangeBtn" class="btn-save">Export Excel</button><button id="closeRangeModalBtn" class="btn-cancel">Cancel</button></div></div></div>
 <div id="reminderPopup" class="reminder-popup hide"><i class="fas fa-bell" style="font-size:2rem;"></i><h3>Backup Reminder</h3><p>कृपया अभी JSON Backup लें।</p><button id="reminderBackupBtn" class="reminder-btn">JSON Backup Now</button></div>
 
-<!-- Cash Modal - Custom name suggestions (no datalist/dropdown arrow) -->
+<!-- Cash Modal -->
 <div id="cashModal" class="modal">
     <div class="modal-card">
         <div class="modal-save-top"><button type="submit" form="cashForm" class="btn-save-small"><i class="fas fa-save"></i> सेव</button></div>
@@ -341,7 +341,7 @@
     </div>
 </div>
 
-<!-- Loan Modal - Custom name suggestions (no datalist/dropdown arrow) -->
+<!-- Loan Modal -->
 <div id="loanModal" class="modal">
     <div class="modal-card">
         <div class="modal-save-top"><button type="submit" form="loanForm" class="btn-save-small"><i class="fas fa-save"></i> सेव</button></div>
@@ -389,7 +389,7 @@
     function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
     function initSupabase() { if (typeof supabase === 'undefined') { setTimeout(initSupabase, 500); return; } supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
 
-    // ========== PENDING CHANGES TRACKER ==========
+    // PENDING CHANGES TRACKER
     const PENDING_KEY = 'hlb_daily_pending';
 
     function _loadPending() {
@@ -435,14 +435,12 @@
         if (!navigator.onLine) { alert('❌ Internet nahi hai!'); return; }
         if (!currentUser) { alert('❌ Pehle login karein!'); return; }
 
-        // Pending IDs se data nikalo — nahi mila to poora load karo
         const pendingCashIds = [..._pendingChanges.cash];
         const pendingLoanIds = [..._pendingChanges.loan];
 
         let finalCash = pendingCashIds.length > 0 ? cashData.filter(c => pendingCashIds.includes(String(c.id))) : [];
         let finalLoan = pendingLoanIds.length > 0 ? loanData.filter(l => pendingLoanIds.includes(String(l.id))) : [];
 
-        // Fallback — agar ID memory mein nahi mili
         if (pendingCashIds.length > 0 && finalCash.length === 0) finalCash = cashData;
         if (pendingLoanIds.length > 0 && finalLoan.length === 0) finalLoan = loanData;
 
@@ -460,21 +458,18 @@
         try {
             let successCount = 0, errorCount = 0;
 
-            // Cash push
             for (let c of finalCash) {
                 const supItem = { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode||'Cash', remark: c.remark||'', userid: c.userId||currentUser.id, username: c.userName||currentUser.name };
                 const { error } = await supabaseClient.from('daily_cash').upsert(supItem, { onConflict: 'id' });
                 if (error) { errorCount++; } else { successCount++; _pendingChanges.cash.delete(String(c.id)); }
             }
 
-            // Loan push
             for (let l of finalLoan) {
                 const supItem = { id: l.id, name: l.name, address: l.address||'', loanamount: l.loanAmount, date: l.date, period: l.period, interest: l.interest||null, remark: l.remark||'', userid: l.userId||currentUser.id, username: l.userName||currentUser.name };
                 const { error } = await supabaseClient.from('daily_loan').upsert(supItem, { onConflict: 'id' });
                 if (error) { errorCount++; } else { successCount++; _pendingChanges.loan.delete(String(l.id)); }
             }
 
-            // Notes push
             if (_pendingChanges.notes.size > 0) {
                 const { error } = await supabaseClient.from('daily_notes').upsert({ id: `noteData_${currentUser.id}`, counts: noteCounts, userid: currentUser.id }, { onConflict: 'id' });
                 if (!error) { _pendingChanges.notes.clear(); successCount++; }
@@ -523,11 +518,9 @@
                 else supItem = { id: item.id, counts: item.counts, userid: currentUser.id };
                 const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
                 if(error) {
-                    // Sync nahi hua — pending mein add karo
                     if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
                     showToast("⚠️ Saved locally only"); updateSyncStatus('error','❌');
                 } else {
-                    // Sync hua — pending se hata do
                     if(_pendingChanges[store]) { _pendingChanges[store].delete(String(item.id)); _savePending(); }
                     showToast("✅ Saved to cloud"); updateSyncStatus('synced','✅');
                 }
@@ -536,7 +529,6 @@
                 updateSyncStatus('error','❌');
             }
         } else {
-            // Offline — pending mein add karo
             if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
             showToast("📱 Offline mode - saved locally"); updateSyncStatus('pending','⏳');
         }
@@ -595,7 +587,6 @@
         }
     }
     
-    // Custom name suggestions function - shows only after 3 letters
     function setupNameSuggestions(inputId, suggestionsId, dataGetter) {
         let input = document.getElementById(inputId);
         let suggestionsDiv = document.getElementById(suggestionsId);
@@ -643,20 +634,48 @@
         return [...new Set(loanData.map(l => l.name))].sort();
     }
     
+    // ✅ UPDATED loadAll() - Current date select hoga dono tabs mein
     async function loadAll() {
         if(!db) return;
         let allCash = await getAll("cash"), allLoan = await getAll("loan");
-        if(currentUser && currentUser.role !== 'admin') { cashData = allCash.filter(c => c.userId === currentUser.id); loanData = allLoan.filter(l => l.userId === currentUser.id); } else { cashData = allCash; loanData = allLoan; }
-        cashDatesSet = new Set(cashData.map(c => c.date)); loanDatesSet = new Set(loanData.map(l => l.date));
-        updateTotals(); renderCashDates(); renderLoanDates();
-        
-        // Setup name suggestions after data loads
+        if(currentUser && currentUser.role !== 'admin') {
+            cashData = allCash.filter(c => c.userId === currentUser.id);
+            loanData = allLoan.filter(l => l.userId === currentUser.id);
+        } else {
+            cashData = allCash;
+            loanData = allLoan;
+        }
+        cashDatesSet = new Set(cashData.map(c => c.date));
+        loanDatesSet = new Set(loanData.map(l => l.date));
+        updateTotals();
+        renderCashDates();
+        renderLoanDates();
+
         setupNameSuggestions("cashName", "cashNameSuggestions", getCashNames);
         setupNameSuggestions("loanName", "loanNameSuggestions", getLoanNames);
-        
+
         let today = getToday();
-        if(currentActiveTab === "cash") { selectedCashDate = cashDatesSet.has(today) ? today : (cashDatesSet.size ? Array.from(cashDatesSet)[0] : null); renderCashEntries(); renderCashDates(); }
-        else { selectedLoanDate = loanDatesSet.has(today) ? today : (loanDatesSet.size ? Array.from(loanDatesSet)[0] : null); renderLoanEntries(); renderLoanDates(); }
+
+        // Cash tab - current date select karo agar exist karta hai
+        if(currentActiveTab === "cash") {
+            if(cashDatesSet.has(today)) {
+                selectedCashDate = today;
+            } else {
+                selectedCashDate = cashDatesSet.size ? Array.from(cashDatesSet)[0] : null;
+            }
+            renderCashEntries();
+            renderCashDates();
+        }
+        // Loan tab - current date select karo agar exist karta hai
+        else {
+            if(loanDatesSet.has(today)) {
+                selectedLoanDate = today;
+            } else {
+                selectedLoanDate = loanDatesSet.size ? Array.from(loanDatesSet)[0] : null;
+            }
+            renderLoanEntries();
+            renderLoanDates();
+        }
     }
     
     function updateTotals() { let tc = cashData.reduce((s,c)=>s+c.amount,0); let tl = loanData.reduce((s,l)=>s+l.loanAmount,0); document.getElementById("cashTotalAmount").innerHTML = `₹${formatAmount(tc)}`; document.getElementById("loanTotalAmount").innerHTML = `₹${formatAmount(tl)}`; }
@@ -943,7 +962,7 @@
     initSupabase();
     if(!checkSavedLogin()) { document.getElementById("loginOverlay").style.display = "flex"; document.getElementById("mainApp").classList.add("hide-app"); }
     
-    // ========== PWA SERVICE WORKER REGISTRATION (कोई बदलाव नहीं, बस SW रजिस्टर कर रहा है) ==========
+    // PWA SERVICE WORKER REGISTRATION
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('./sw.js')
@@ -967,7 +986,6 @@
             }
         });
     }
-    // ========== END OF SERVICE WORKER REGISTRATION ==========
     
 </script>
 </body>
