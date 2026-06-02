@@ -419,10 +419,12 @@
                 const { error } = await supabaseClient.from(table).upsert(supItem, { onConflict: 'id' });
                 if(error) {
                     if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
-                    showToast("⚠️ Saved locally only"); updateSyncStatus('error','❌');
+                    showToast("⚠️ Saved locally only");
+                    updateSyncStatus('error','❌');
                 } else {
                     if(_pendingChanges[store]) { _pendingChanges[store].delete(String(item.id)); _savePending(); }
-                    showToast("✅ Saved to cloud"); updateSyncStatus('synced','✅');
+                    showToast("✅ Saved to cloud");
+                    updateSyncStatus('synced','✅');
                 }
             } catch(e) {
                 if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
@@ -430,7 +432,8 @@
             }
         } else {
             if(_pendingChanges[store]) { _pendingChanges[store].add(String(item.id)); _savePending(); }
-            showToast("📱 Offline mode - saved locally"); updateSyncStatus('pending','⏳');
+            showToast("📱 Offline mode - saved locally");
+            updateSyncStatus('pending','⏳');
         }
     }
     
@@ -534,7 +537,6 @@
         return [...new Set(loanData.map(l => l.name))].sort();
     }
     
-    // ✅ FINAL FIX - Latest date always selected (not stuck on 24/05/2026)
     async function loadAll() {
         if(!db) return;
         let allCash = await getAll("cash"), allLoan = await getAll("loan");
@@ -549,7 +551,6 @@
         loanDatesSet = new Set(loanData.map(l => l.date));
         updateTotals();
         
-        // Get sorted dates (newest first)
         let sortedCashDates = Array.from(cashDatesSet).sort((a,b) => {
             let da = a.split('/').reverse().join('-');
             let db = b.split('/').reverse().join('-');
@@ -561,7 +562,6 @@
             return db.localeCompare(da);
         });
         
-        // Select LATEST date (newest first)
         if(currentActiveTab === "cash") {
             selectedCashDate = sortedCashDates.length > 0 ? sortedCashDates[0] : null;
             renderCashDates();
@@ -572,8 +572,8 @@
             renderLoanEntries();
         }
         
-        renderCashDates();  // re-render to show active state
-        renderLoanDates();  // re-render to show active state
+        renderCashDates();
+        renderLoanDates();
 
         setupNameSuggestions("cashName", "cashNameSuggestions", getCashNames);
         setupNameSuggestions("loanName", "loanNameSuggestions", getLoanNames);
@@ -593,10 +593,13 @@
         document.querySelectorAll("#cashDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectCashDate(el.getAttribute("data-date")); }); });
     }
     
+    // ✅ FIXED: New entries show at TOP (descending order by id)
     function renderCashEntries() {
         let container = document.getElementById("cashEntriesTable");
         if(!selectedCashDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = cashData.filter(c=>c.date===selectedCashDate);
+        // Sort by id DESCENDING - newest entry first (largest id = latest)
+        entries.sort((a, b) => b.id - a.id);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई प्रविष्टि नहीं</div>`; container.classList.add("show"); return; }
         let html = `<table class="cash-table"><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
         entries.forEach(e=>{ html += `<tr><td style="font-weight:500">${escape(e.name)}</td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(e.amount)}</td><td>${e.date}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${e.mode}</span></td><td style="color:#666">${escape(e.remark || '-')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
@@ -632,10 +635,13 @@
         document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectLoanDate(el.getAttribute("data-date")); }); });
     }
     
+    // ✅ FIXED: New loan entries show at TOP (descending order by id)
     function renderLoanEntries() {
         let container = document.getElementById("loanEntriesTable");
         if(!selectedLoanDate) { container.classList.remove("show"); container.innerHTML = ""; return; }
         let entries = loanData.filter(l=>l.date===selectedLoanDate);
+        // Sort by id DESCENDING - newest entry first (largest id = latest)
+        entries.sort((a, b) => b.id - a.id);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई लोन नहीं</div>`; container.classList.add("show"); return; }
         let html = `<table class="loan-table"><thead><tr><th>नाम / पता</th><th>लोन रकम</th><th>वापसी</th><th>प्रति दिन</th><th>अवधि/ब्याज</th><th>तारीख</th><th>Remark</th><th style="width:60px">कार्य</th></tr></thead><tbody>`;
         entries.forEach(l => { let {ret,daily} = calcReturnAndDaily(l); let periodText = l.period === 'month' ? `${l.interest}%` : `${l.period} दिन`; let returnText = (l.period === 'month') ? "" : `₹${formatAmount(ret)}`; let perDayText = (l.period === 'month') ? "—" : `₹${formatAmount(daily)}`; html += `<tr><td><strong>${escape(l.name)}</strong><br><small style="color:#666; font-size:0.65rem">${escape(l.address)}</small></td><td style="color:#0f6b3a; font-weight:bold">₹${formatAmount(l.loanAmount)}</td><td style="color:#e67e22">${returnText}</td><td>${perDayText}</td><td><span style="background:#eef2fa; padding:2px 8px; border-radius:20px; font-size:0.7rem">${periodText}</span></td><td>${l.date}</td><td style="color:#666">${escape(l.remark||'-')}</td><td><button class="btn-icon" onclick="editLoanWithAuth(${l.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteLoanWithAuth(${l.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
