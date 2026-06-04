@@ -13,19 +13,104 @@
         body{background:#eef2f5;font-family:'Segoe UI',sans-serif;padding:10px;font-size:13px;}
         .container{max-width:600px;margin:0 auto;}
         .header{background:linear-gradient(135deg,#0f6b3a,#0a4f2c);color:#fff;border-radius:20px;padding:12px;text-align:center;margin-bottom:12px;position:relative;}
-        .coin-dashboard-wrapper{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:45px;height:45px;cursor:pointer;}
-        .coin-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:radial-gradient(#f0f0f0,#a8a8a8);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 1px #a07618;}
-        .rupee-symbol{font-size:14px;font-weight:700;color:#3a3a3a;line-height:1;}
-        .coin-value{font-size:8px;font-weight:600;}
+        .header h1{
+            font-size:1.5rem;font-weight:900;margin:0 0 2px 0;letter-spacing:2px;
+            color:transparent;
+            background:linear-gradient(180deg,#ffffff 0%,#c8e6c9 40%,#81c784 70%,#4caf50 100%);
+            -webkit-background-clip:text;background-clip:text;
+            text-shadow:none;
+            filter:drop-shadow(0 2px 0 #052a18) drop-shadow(0 4px 0 #041f12) drop-shadow(0 6px 8px rgba(0,0,0,0.6));
+            transform:perspective(200px) rotateX(5deg);
+            display:block;
+        }
+        .header p{
+            font-size:0.65rem;font-weight:800;margin:0;letter-spacing:1.5px;
+            text-transform:uppercase;
+            color:transparent;
+            background:linear-gradient(180deg,#ffe082 0%,#ffc107 50%,#ff8f00 100%);
+            -webkit-background-clip:text;background-clip:text;
+            filter:drop-shadow(0 1px 0 #7a4300) drop-shadow(0 2px 0 #5a3100) drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+        }
+        #noteCountingIcon:active{transform:translateY(-50%) scale(0.92);}
+        .coin-inner{
+            width:44px;height:44px;border-radius:50%;
+            cursor:pointer;
+            pointer-events:all !important;
+            -webkit-tap-highlight-color:transparent;
+            touch-action:manipulation;
+            /* Indian 10 Rs coin — silver center, gold outer ring */
+            background:
+                radial-gradient(circle at 35% 30%,
+                    #ffffff 0%,
+                    #e8e8e8 15%,
+                    #c0c0c0 30%,
+                    #a8a8a8 50%,
+                    #888 70%,
+                    #606060 100%
+                );
+            /* Gold outer ring */
+            border:4px solid transparent;
+            background-clip:padding-box;
+            box-shadow:
+                /* Gold ring */
+                0 0 0 4px #c8960a,
+                0 0 0 5px #f0c030,
+                0 0 0 6px #a07010,
+                /* 3D depth — top light */
+                inset 0 3px 6px rgba(255,255,255,0.7),
+                /* 3D depth — bottom shadow */
+                inset 0 -3px 6px rgba(0,0,0,0.45),
+                /* left highlight */
+                inset 3px 0 5px rgba(255,255,255,0.3),
+                /* right shadow */
+                inset -3px 0 5px rgba(0,0,0,0.3),
+                /* outer glow */
+                0 2px 8px rgba(180,140,0,0.6),
+                0 4px 12px rgba(0,0,0,0.4);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+        }
+        .rupee-symbol{
+            font-size:15px;font-weight:900;line-height:1;
+            color:transparent;
+            background:linear-gradient(180deg,#ffffff 0%,#d0d0d0 40%,#909090 100%);
+            -webkit-background-clip:text;background-clip:text;
+            filter:drop-shadow(0 1px 1px rgba(0,0,0,0.6));
+            font-family:Arial,sans-serif;
+        }
+        .coin-value{
+            font-size:7px;font-weight:900;line-height:1;
+            color:transparent;
+            background:linear-gradient(180deg,#e0e0e0 0%,#a0a0a0 100%);
+            -webkit-background-clip:text;background-clip:text;
+            filter:drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+            letter-spacing:0.5px;
+        }
         .sync-status{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:9px;background:rgba(0,0,0,0.5);padding:3px 6px;border-radius:20px;}
         .expiry-badge{position:absolute;right:12px;top:6px;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:20px;font-size:0.6rem;}
         
         /* Tab Bar with amounts inside */
         .tab-bar{display:flex;gap:8px;margin-bottom:12px;justify-content:space-between;align-items:center;}
-        .tab-btn{flex:1;background:#fff;border:none;padding:6px 0;border-radius:40px;font-weight:bold;font-size:0.75rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
-        .tab-btn.active{background:#0f6b3a;color:#fff;}
-        .tab-btn.loan-tab.active{background:#dc2626;color:#fff;}
-        .tab-amount{font-size:0.65rem;font-weight:700;}
+        .tab-btn{
+            flex:1;border:none;padding:10px 6px;border-radius:16px;font-weight:bold;font-size:0.75rem;
+            cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;
+            background:linear-gradient(145deg,#e6e6e6,#ffffff);
+            box-shadow:4px 4px 8px #c8c8c8,-3px -3px 7px #ffffff;
+            color:#444;transition:all 0.2s ease;
+        }
+        .tab-btn:active{box-shadow:2px 2px 4px #c8c8c8,-1px -1px 3px #ffffff;transform:scale(0.97);}
+        .tab-btn.active{
+            background:linear-gradient(145deg,#0a5c30,#14a558);
+            box-shadow:4px 4px 10px #085228,-2px -2px 6px #1acd6a,inset 0 1px 0 rgba(255,255,255,0.15);
+            color:#fff;
+        }
+        .tab-btn.loan-tab.active{
+            background:linear-gradient(145deg,#a81c1c,#e83232);
+            box-shadow:4px 4px 10px #8b1414,-2px -2px 6px #f05050,inset 0 1px 0 rgba(255,255,255,0.15);
+            color:#fff;
+        }
+        .tab-amount{font-size:0.7rem;font-weight:800;letter-spacing:0.3px;
+            text-shadow:0 1px 2px rgba(0,0,0,0.2);
+        }
         .cash-amount-tab{color:#0f6b3a;}
         .loan-amount-tab{color:#dc2626;}
         .tab-btn.active .cash-amount-tab{color:#d4ffd4;}
@@ -42,10 +127,14 @@
         
         /* Search Row - all in one line */
         .search-row{display:flex;gap:6px;background:#fff;border-radius:20px;padding:6px 10px;margin-bottom:12px;align-items:center;flex-wrap:nowrap;}
-        .search-input-wrapper{flex:2;min-width:0;position:relative;}
-        #customerSearch{width:100%;padding:5px 8px;border-radius:40px;border:1px solid #ddd;font-size:0.65rem;background:#fff;}
-        .date-filter-wrapper{display:flex;gap:4px;flex:1.5;min-width:0;}
-        .date-filter-wrapper input{width:100%;padding:5px 5px;border-radius:40px;border:1px solid #ddd;font-size:0.6rem;background:#fff;}
+        .search-input-wrapper{flex:2;min-width:0;position:relative;transition:all 0.3s ease;}
+        .search-input-wrapper.expanded{flex:4;}
+        #customerSearch{width:100%;padding:5px 8px;border-radius:40px;border:1px solid #ddd;font-size:0.65rem;background:#fff;transition:all 0.3s ease;}
+        .search-input-wrapper.expanded #customerSearch{font-size:0.85rem;padding:7px 10px;border-color:#3498db;box-shadow:0 0 0 2px rgba(52,152,219,0.2);}
+        .date-filter-wrapper{display:flex;gap:4px;flex:1.5;min-width:0;transition:all 0.3s ease;}
+        .date-filter-wrapper input{width:100%;padding:5px 5px;border-radius:40px;border:1px solid #ddd;font-size:0.6rem;background:#fff;transition:all 0.3s ease;}
+        .date-filter-wrapper.expanded{flex:3;}
+        .date-filter-wrapper.expanded input{font-size:0.85rem;padding:7px 10px;border-color:#3498db;box-shadow:0 0 0 2px rgba(52,152,219,0.2);}
         .create-date-btn{background:#0f6b3a;color:#fff;border:none;padding:5px 8px;border-radius:40px;font-weight:bold;font-size:0.6rem;cursor:pointer;white-space:nowrap;}
         
         .search-suggestions{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-height:200px;overflow-y:auto;z-index:100;display:none;}
@@ -63,7 +152,7 @@
         
         .entry-table{background:#fff;border-radius:20px;padding:8px;margin-top:6px;overflow-x:auto;display:none;}
         .entry-table.show{display:block;}
-        table{width:100%;border-collapse:collapse;font-size:0.65rem;min-width:560px;}
+        table{width:100%;border-collapse:collapse;font-size:0.65rem;min-width:560px;font-weight:600;}
         th,td{padding:6px 4px;text-align:left;border-bottom:1px solid #eef2f5;vertical-align:middle;}
         th{background:#f5f7fa;font-weight:600;color:#333;}
         .btn-icon{background:none;border:none;margin:0 2px;cursor:pointer;font-size:0.85rem;padding:3px 5px;border-radius:20px;}
@@ -160,9 +249,9 @@
 <div id="mainApp" class="hide-app">
 <div class="container">
     <div class="header">
-        <div class="coin-dashboard-wrapper" id="noteCountingIcon">
+        <button id="noteCountingIcon" onclick="renderNotePopup(); document.getElementById('noteModal').style.display='flex';" style="position:absolute;left:6px;top:50%;transform:translateY(-50%);width:60px;height:60px;border-radius:50%;border:none;background:transparent;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;align-items:center;justify-content:center;z-index:10;">
             <div class="coin-inner"><span class="rupee-symbol">₹</span><span class="coin-value">10</span></div>
-        </div>
+        </button>
         <div id="expiryBadge" class="expiry-badge"></div>
         <div id="syncStatus" class="sync-status">🔄</div>
         <h1>Daily Collection</h1>
@@ -632,7 +721,7 @@
     function calculateNoteTotal() { let total=0; for(let d of denoms) { let val=parseInt(noteCounts[d]); if(!isNaN(val) && val>0) total+=val*d; } return total; }
     function renderNotePopup() { let container = document.getElementById("noteGrid"); let html = ''; for(let d of denoms) { let count = noteCounts[d] === "" ? "" : noteCounts[d]; let value = (parseInt(count) && !isNaN(parseInt(count))) ? (parseInt(count) * d) : 0; html += `<div class="note-row-simple"><span class="note-label-simple">₹${d}</span><input type="number" class="note-input-simple" data-denom="${d}" value="${count}" placeholder="0" min="0" step="1"><span class="note-value-simple">₹${value.toLocaleString('en-IN')}</span></div>`; } container.innerHTML = html; document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN'); document.querySelectorAll(".note-input-simple").forEach(inp => { inp.addEventListener("input", (e) => { let denom = parseInt(e.target.dataset.denom); let val = e.target.value === "" ? "" : parseInt(e.target.value); if(isNaN(val)) val = ""; noteCounts[denom] = val === "" ? "" : val; let valNum = (val === "" || isNaN(val)) ? 0 : val; let vs = e.target.parentElement.querySelector(".note-value-simple"); if(vs) vs.innerText = `₹${(valNum * denom).toLocaleString('en-IN')}`; document.getElementById("noteTotal").innerText = calculateNoteTotal().toLocaleString('en-IN'); }); }); }
     function resetNoteFields() { for(let d of denoms) noteCounts[d] = ""; renderNotePopup(); }
-    document.getElementById("noteCountingIcon").onclick = () => { renderNotePopup(); document.getElementById("noteModal").style.display = "flex"; };
+    // Coin click — button ke onclick se handle ho raha hai
     document.getElementById("resetNotesBtn").onclick = () => { resetNoteFields(); };
     document.getElementById("saveNotesBtn").onclick = async() => { await saveNotesToDB(); document.getElementById("noteModal").style.display = "none"; };
     document.getElementById("closeNoteModalBtn").onclick = () => document.getElementById("noteModal").style.display = "none";
@@ -779,6 +868,29 @@
     
     document.getElementById("searchFromDate").addEventListener("change", () => { if(document.getElementById("customerSearch").value.trim()) { performSearch(document.getElementById("customerSearch").value.trim()); } });
     document.getElementById("searchToDate").addEventListener("change", () => { if(document.getElementById("customerSearch").value.trim()) { performSearch(document.getElementById("customerSearch").value.trim()); } });
+    // Date fields focus par bada, blur par chota
+    const dateWrapper = document.querySelector(".date-filter-wrapper");
+    [document.getElementById("searchFromDate"), document.getElementById("searchToDate")].forEach(inp => {
+        inp.addEventListener("focus", () => dateWrapper.classList.add("expanded"));
+        inp.addEventListener("blur", () => {
+            setTimeout(() => {
+                if (!document.activeElement.closest(".date-filter-wrapper")) {
+                    dateWrapper.classList.remove("expanded");
+                }
+            }, 150);
+        });
+    });
+    // Search field focus par bada, blur par chota
+    const searchWrapper = document.querySelector(".search-input-wrapper");
+    const searchInp = document.getElementById("customerSearch");
+    searchInp.addEventListener("focus", () => searchWrapper.classList.add("expanded"));
+    searchInp.addEventListener("blur", () => {
+        setTimeout(() => {
+            if (document.activeElement !== searchInp) {
+                searchWrapper.classList.remove("expanded");
+            }
+        }, 150);
+    });
     
     document.getElementById("customerSearch").addEventListener("input", (e) => { showSearchSuggestions(e.target.value); });
     document.getElementById("customerSearch").addEventListener("blur", () => { setTimeout(() => { document.getElementById("searchSuggestions").classList.remove("show"); }, 200); });
