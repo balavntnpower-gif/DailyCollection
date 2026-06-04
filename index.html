@@ -558,9 +558,18 @@
     function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function escape(str){ return String(str||"").replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
     
-    function updateExpiryBadge(expiryDate) { 
-        let badge = document.getElementById("expiryBadge"); 
-        if(!expiryDate) { badge.style.display = "none"; return; } 
+    function updateExpiryBadge(expiryDate) {
+        let badge = document.getElementById("expiryBadge");
+        if(!expiryDate) { badge.style.display = "none"; return; }
+        // Har 30 second mein 1 second ke liye dikhao
+        function flashBadge() {
+            badge.style.display = "block";
+            setTimeout(() => { badge.style.display = "none"; }, 1000);
+        }
+        badge.style.display = "none"; // pehle hide
+        flashBadge(); // pehli baar turant dikhao
+        setInterval(flashBadge, 30000); // har 30 sec mein
+        
         let today = new Date(); today.setHours(0,0,0,0);
         let expiry = new Date(expiryDate); expiry.setHours(0,0,0,0);
         let diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
@@ -922,9 +931,11 @@
     initSupabase();
     if(!checkSavedLogin()) { document.getElementById("loginOverlay").style.display = "flex"; document.getElementById("mainApp").classList.add("hide-app"); }
     
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
         window.addEventListener('load', function() {
-            navigator.serviceWorker.register('./sw.js').then(function(reg) { console.log('✅ Service Worker registered'); }).catch(function(err) { console.error('❌ Service Worker failed'); });
+            navigator.serviceWorker.register('./sw.js')
+                .then(function(reg) { console.log('✅ Service Worker registered'); })
+                .catch(function(err) { /* Silent — localhost ya file:// par nahi chalta */ });
         });
     }
     
