@@ -12,7 +12,7 @@
         *{margin:0;padding:0;box-sizing:border-box;}
         body{background:#eef2f5;font-family:'Segoe UI',sans-serif;padding:10px;font-size:13px;}
         .container{max-width:600px;margin:0 auto;}
-        .header{background:linear-gradient(135deg,#0f6b3a,#0a4f2c);color:#fff;border-radius:20px;padding:12px;text-align:center;margin-bottom:12px;position:relative;}
+        .header{background:linear-gradient(135deg,#0f6b3a,#0a4f2c);color:#fff;border-radius:20px;padding:12px 12px 12px 72px;text-align:center;margin-bottom:12px;position:relative;}
         .header h1{
             font-size:1.5rem;font-weight:900;margin:0 0 2px 0;letter-spacing:2px;
             color:transparent;
@@ -24,12 +24,27 @@
             display:block;
         }
         .header p{
-            font-size:0.65rem;font-weight:800;margin:0;letter-spacing:1.5px;
+            font-size:0.65rem;font-weight:900;margin:0;letter-spacing:2px;
             text-transform:uppercase;
             color:transparent;
-            background:linear-gradient(180deg,#ffe082 0%,#ffc107 50%,#ff8f00 100%);
+            background:linear-gradient(90deg,
+                #fff5cc 0%,
+                #ffe57a 15%,
+                #ffd700 30%,
+                #fff8a0 45%,
+                #ffa500 60%,
+                #ffd700 75%,
+                #fff5cc 90%,
+                #ffe57a 100%
+            );
+            background-size:200% auto;
             -webkit-background-clip:text;background-clip:text;
-            filter:drop-shadow(0 1px 0 #7a4300) drop-shadow(0 2px 0 #5a3100) drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+            animation:goldShine 2.5s linear infinite;
+            filter:drop-shadow(0 0 4px rgba(255,215,0,0.8)) drop-shadow(0 1px 0 #7a4300) drop-shadow(0 2px 0 #5a3100);
+        }
+        @keyframes goldShine{
+            0%{background-position:0% center;}
+            100%{background-position:200% center;}
         }
         #noteCountingIcon:active{transform:translateY(-50%) scale(0.92);}
         .coin-inner{
@@ -265,7 +280,7 @@
             <span class="tab-amount cash-amount-tab" id="cashTabAmount">₹0</span>
         </button>
         <div class="tools-dropdown-container">
-            <button class="create-date-btn" id="createDateBtn" style="display:block;width:100%;margin-bottom:4px;border-radius:30px;"><i class="fas fa-calendar-plus"></i> New Date</button>
+            <button class="create-date-btn" id="createDateBtn" style="display:block;width:100%;margin-bottom:4px;border-radius:30px;"><i class="fas fa-calendar-plus"></i> बनाएँ</button>
             <button class="tools-dropdown-btn" id="toolsDropdownBtn"><i class="fas fa-chevron-down"></i> More Tools</button>
             <div class="tools-dropdown-menu" id="toolsDropdownMenu">
                 <button id="refreshDataBtn"><i class="fas fa-sync-alt"></i> Sync</button>
