@@ -371,12 +371,11 @@
     let currentUser = null;
     const GITHUB_USERS_URL = "https://balavntnpower-gif.github.io/DailyCollection/users.json";
     
-    // Scroll load ke liye variables
+    // Scroll load ke liye variables - pehle sirf 4 dikhenge
     let cashVisibleCount = 4;
     let loanVisibleCount = 4;
     
     function formatDateForDisplay(dateStr) {
-        // Input: DD/MM/YYYY ya DD-MM-YYYY
         if(!dateStr) return "";
         let parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
         if(parts.length === 3) {
@@ -386,7 +385,6 @@
     }
     
     function formatDateForStorage(dateStr) {
-        // Input: DD-MM-YYYY ya DD/MM/YYYY -> DD-MM-YYYY
         if(!dateStr) return "";
         let parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
         if(parts.length === 3) {
@@ -403,6 +401,15 @@
     function getTodayForFilename() {
         let d = new Date();
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    
+    function compareDatesDesc(a, b) {
+        // format DD-MM-YYYY se compare karne ke liye YYYY-MM-DD
+        let aParts = a.split('-');
+        let bParts = b.split('-');
+        let aDate = `${aParts[2]}-${aParts[1]}-${aParts[0]}`;
+        let bDate = `${bParts[2]}-${bParts[1]}-${bParts[0]}`;
+        return bDate.localeCompare(aDate); // nayi pehle
     }
     
     function showToast(msg) { let t=document.createElement('div'); t.className='toast'; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
@@ -518,7 +525,6 @@
     
     async function save(store, item) {
         if (!item.id) { item.id = Date.now(); }
-        // Format date to DD-MM-YYYY
         if(item.date) item.date = formatDateForStorage(item.date);
         let tx = db.transaction(store, "readwrite"); tx.objectStore(store).put(item); await new Promise(r => tx.oncomplete = r);
         if(navigator.onLine && supabaseClient && currentUser) {
@@ -636,12 +642,12 @@
         document.getElementById("loanTabAmount").innerHTML = `₹${formatAmount(totalLoan)}`;
         
         if(currentActiveTab === "cash") {
-            let sortedCashDates = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
+            let sortedCashDates = Array.from(cashDatesSet).sort(compareDatesDesc);
             selectedCashDate = sortedCashDates.length > 0 ? sortedCashDates[0] : null;
             renderCashDates();
             renderCashEntries();
         } else {
-            let sortedLoanDates = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
+            let sortedLoanDates = Array.from(loanDatesSet).sort(compareDatesDesc);
             selectedLoanDate = sortedLoanDates.length > 0 ? sortedLoanDates[0] : null;
             renderLoanDates();
             renderLoanEntries();
@@ -656,12 +662,8 @@
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     
     function renderCashDates() {
-        let arr = Array.from(cashDatesSet).sort((a,b)=>{ 
-            let da = a.split('-').reverse().join('-'); 
-            let db = b.split('-').reverse().join('-'); 
-            return db.localeCompare(da); 
-        });
-        // Sirf first 4 dikhao (limit)
+        let arr = Array.from(cashDatesSet).sort(compareDatesDesc);
+        // Sirf first 4 dikhao
         let visibleArr = arr.slice(0, cashVisibleCount);
         let html = visibleArr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
         let container = document.getElementById("cashDatesList");
@@ -690,8 +692,8 @@
         entries.sort((a,b) => b.id - a.id);
         if(entries.length===0){ container.innerHTML = `<div style="text-align:center;padding:20px">कोई प्रविष्टि नहीं</div>`; container.classList.add("show"); return; }
         let html = `<table><thead><tr><th>नाम</th><th>रकम</th><th>तारीख</th><th>मोड</th><th>Remark</th><th>कार्य</th></tr></thead><tbody>`;
-        entries.forEach(e=>{ html += `<tr><td style="font-weight:500">${escape(e.name)}</td><td style="color:#0f6b3a;font-weight:bold">₹${formatAmount(e.amount)}</td><td>${e.date}</td><td><span style="background:#eef2fa;padding:2px 6px;border-radius:20px;font-size:0.65rem">${e.mode}</span></td><td style="color:#666">${escape(e.remark || '-')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td></tr>`; });
-        html += `</tbody></td>`;
+        entries.forEach(e=>{ html += `<tr><td style="font-weight:500">${escape(e.name)}</td><td style="color:#0f6b3a;font-weight:bold">₹${formatAmount(e.amount)}</td><td>${e.date}</td><td><span style="background:#eef2fa;padding:2px 6px;border-radius:20px;font-size:0.65rem">${e.mode}</span></td><td style="color:#666">${escape(e.remark || '-')}</td><td><button class="btn-icon" onclick="editCashWithAuth(${e.id})"><i class="fas fa-edit"></i></button><button class="btn-icon" onclick="deleteCashWithAuth(${e.id})" style="color:#e74c3c"><i class="fas fa-trash"></i></button></td>`; });
+        html += `</tbody></table>`;
         container.innerHTML = html; container.classList.add("show");
     }
     
@@ -713,11 +715,7 @@
     function calcReturnAndDaily(l){ if(l.period === 'month'){ let ret = l.loanAmount + (l.loanAmount * l.interest / 100); return {ret, daily: null}; } else { let ret = l.loanAmount * 1.20; return {ret, daily: ret / l.period}; } }
     
     function renderLoanDates() {
-        let arr = Array.from(loanDatesSet).sort((a,b)=>{ 
-            let da = a.split('-').reverse().join('-'); 
-            let db = b.split('-').reverse().join('-'); 
-            return db.localeCompare(da); 
-        });
+        let arr = Array.from(loanDatesSet).sort(compareDatesDesc);
         let visibleArr = arr.slice(0, loanVisibleCount);
         let html = visibleArr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
         let container = document.getElementById("loanDatesList");
