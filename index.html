@@ -157,7 +157,7 @@
         .suggestion-item{padding:6px 10px;cursor:pointer;border-bottom:1px solid #eee;font-size:0.65rem;display:flex;justify-content:space-between;align-items:center;}
         
         /* Date list with scroll reveal */
-        .date-list{background:#fff;border-radius:20px;padding:5px;margin-bottom:12px;max-height:200px;overflow-y:auto;scroll-behavior:smooth;}
+        .date-list{background:#fff;border-radius:20px;padding:5px;margin-bottom:12px;max-height:188px;overflow-y:auto;scroll-behavior:smooth;}
         .date-item{padding:10px 14px;border-bottom:1px solid #eef2f5;cursor:pointer;font-weight:500;font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;}
         .date-text{display:flex;align-items:center;gap:6px;flex-shrink:0;font-size:0.8rem;width:100px;}
         .date-amount{font-weight:700;color:#0f6b3a;font-size:0.85rem;white-space:nowrap;flex-shrink:0;text-align:right;width:75px;}
@@ -542,9 +542,9 @@
         try {
             if(forceRefresh && db) { let tx = db.transaction(["cash", "loan"], "readwrite"); tx.objectStore("cash").clear(); tx.objectStore("loan").clear(); await new Promise(r => tx.oncomplete = r); }
             const { data: cashDB } = await supabaseClient.from('daily_cash').select('*').eq('userid', currentUser.id);
-            if(cashDB && cashDB.length) for(let c of cashDB) await saveToIndexedDBOnly("cash", { id: c.id, name: c.name, amount: c.amount, date: c.date, mode: c.mode, remark: c.remark||'', userId: c.userid, userName: c.username });
+            if(cashDB && cashDB.length) for(let c of cashDB) await saveToIndexedDBOnly("cash", { id: c.id, name: c.name, amount: c.amount, date: normalizeDate(c.date), mode: c.mode, remark: c.remark||'', userId: c.userid, userName: c.username });
             const { data: loanDB } = await supabaseClient.from('daily_loan').select('*').eq('userid', currentUser.id);
-            if(loanDB && loanDB.length) for(let l of loanDB) await saveToIndexedDBOnly("loan", { id: l.id, name: l.name, address: l.address||'', loanAmount: l.loanamount, date: l.date, period: l.period, interest: l.interest, remark: l.remark||'', userId: l.userid, userName: l.username });
+            if(loanDB && loanDB.length) for(let l of loanDB) await saveToIndexedDBOnly("loan", { id: l.id, name: l.name, address: l.address||'', loanAmount: l.loanamount, date: normalizeDate(l.date), period: l.period, interest: l.interest, remark: l.remark||'', userId: l.userid, userName: l.username });
             const { data: notesDB } = await supabaseClient.from('daily_notes').select('*').eq('userid', currentUser.id).maybeSingle();
             if(notesDB) { noteCounts = notesDB.counts; await saveToIndexedDBOnly("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); }
             await loadAll(); updateSyncStatus('synced','✅'); showToast("✅ Sync complete"); return true;
@@ -554,7 +554,11 @@
     function openDB() { return new Promise((resolve, reject) => { let req = indexedDB.open("HinduLionDailyCollectionDB", 3); req.onupgradeneeded = e => { let db = e.target.result; if(!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id"}); if(!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id"}); if(!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"}); }; req.onsuccess = e => { db = e.target.result; resolve(db); }; req.onerror = e => reject(e); }); }
     async function getAll(store) { return new Promise(r => { let tx = db.transaction(store, "readonly"); tx.objectStore(store).getAll().onsuccess = e => r(e.target.result || []); }); }
     function formatAmount(amt) { return amt % 1 === 0 ? amt.toString() : amt.toFixed(2); }
-    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`; }
+    // Universal date normalizer: DD/MM/YYYY ya DD-MM-YYYY dono → DD-MM-YYYY
+    function normalizeDate(d) { if(!d) return d; return d.replace(/\//g, '-'); }
+    // Date ko sort ke liye YYYY-MM-DD mein convert karo
+    function dateToSort(d) { if(!d) return ''; let p = normalizeDate(d).split('-'); return p[2]+'-'+p[1]+'-'+p[0]; }
+    function getToday() { let d=new Date(); return String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear(); }
     function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function escape(str){ return String(str||"").replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
     
@@ -611,14 +615,14 @@
         if(!db) return;
         let allCash = await getAll("cash"), allLoan = await getAll("loan");
         if(currentUser && currentUser.role !== 'admin') {
-            cashData = allCash.filter(c => c.userId === currentUser.id);
-            loanData = allLoan.filter(l => l.userId === currentUser.id);
+            cashData = allCash.filter(c => c.userId === currentUser.id).map(c => { c.date = normalizeDate(c.date); return c; });
+            loanData = allLoan.filter(l => l.userId === currentUser.id).map(l => { l.date = normalizeDate(l.date); return l; });
         } else {
-            cashData = allCash;
-            loanData = allLoan;
+            cashData = allCash.map(c => { c.date = normalizeDate(c.date); return c; });
+            loanData = allLoan.map(l => { l.date = normalizeDate(l.date); return l; });
         }
-        cashDatesSet = new Set(cashData.map(c => c.date));
-        loanDatesSet = new Set(loanData.map(l => l.date));
+        cashDatesSet = new Set(cashData.map(c => normalizeDate(c.date)));
+        loanDatesSet = new Set(loanData.map(l => normalizeDate(l.date)));
         
         let totalCash = cashData.reduce((s,c)=>s+c.amount,0);
         let totalLoan = loanData.reduce((s,l)=>s+l.loanAmount,0);
@@ -626,12 +630,12 @@
         document.getElementById("loanTabAmount").innerHTML = `₹${formatAmount(totalLoan)}`;
         
         if(currentActiveTab === "cash") {
-            let sortedCashDates = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
+            let sortedCashDates = Array.from(cashDatesSet).sort((a,b)=>{ return dateToSort(b).localeCompare(dateToSort(a)); });
             selectedCashDate = sortedCashDates.length > 0 ? sortedCashDates[0] : null;
             renderCashDates();
             renderCashEntries();
         } else {
-            let sortedLoanDates = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
+            let sortedLoanDates = Array.from(loanDatesSet).sort((a,b)=>{ return dateToSort(b).localeCompare(dateToSort(a)); });
             selectedLoanDate = sortedLoanDates.length > 0 ? sortedLoanDates[0] : null;
             renderLoanDates();
             renderLoanEntries();
@@ -646,18 +650,12 @@
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     
     function renderCashDates() {
-        let arr = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
-        if(!showAllCashDates) arr = arr.slice(0, 4);
-        let html = arr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
+        let allArr = Array.from(cashDatesSet).sort((a,b)=>dateToSort(b).localeCompare(dateToSort(a)));
         let container = document.getElementById("cashDatesList");
+        let html = allArr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
+        if(allArr.length > 4) html += `<div style="text-align:center;padding:6px;font-size:0.65rem;color:#888;border-top:1px solid #eef2f5;">⬇️ Scroll karo — ${allArr.length - 4} aur dates</div>`;
         container.innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#cashDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectCashDate(el.getAttribute("data-date")); }); });
-        container.onscroll = function() {
-            if(!showAllCashDates && this.scrollTop + this.clientHeight >= this.scrollHeight - 20) {
-                showAllCashDates = true;
-                renderCashDates();
-            }
-        };
     }
     
     function renderCashEntries() {
@@ -690,18 +688,12 @@
     function calcReturnAndDaily(l){ if(l.period === 'month'){ let ret = l.loanAmount + (l.loanAmount * l.interest / 100); return {ret, daily: null}; } else { let ret = l.loanAmount * 1.20; return {ret, daily: ret / l.period}; } }
     
     function renderLoanDates() {
-        let arr = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
-        if(!showAllLoanDates) arr = arr.slice(0, 4);
-        let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
+        let allArr = Array.from(loanDatesSet).sort((a,b)=>dateToSort(b).localeCompare(dateToSort(a)));
         let container = document.getElementById("loanDatesList");
+        let html = allArr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
+        if(allArr.length > 4) html += `<div style="text-align:center;padding:6px;font-size:0.65rem;color:#888;border-top:1px solid #eef2f5;">⬇️ Scroll karo — ${allArr.length - 4} aur dates</div>`;
         container.innerHTML = html || "<div style='padding:12px;text-align:center;color:#999'>कोई तारीख नहीं</div>";
         document.querySelectorAll("#loanDatesList .date-item").forEach(el => { el.addEventListener("click", (e) => { if(!e.target.classList.contains('add-icon-btn')) selectLoanDate(el.getAttribute("data-date")); }); });
-        container.onscroll = function() {
-            if(!showAllLoanDates && this.scrollTop + this.clientHeight >= this.scrollHeight - 20) {
-                showAllLoanDates = true;
-                renderLoanDates();
-            }
-        };
     }
     
     function renderLoanEntries() {
@@ -735,7 +727,7 @@
     document.getElementById("loanPeriod").addEventListener("change", e=>{ document.getElementById("percentDiv").style.display = e.target.value === "month" ? "block" : "none"; });
     document.getElementById("createDateBtn").onclick = () => { let today = getToday(); if(currentActiveTab === "cash") { if(!cashDatesSet.has(today)) cashDatesSet.add(today); renderCashDates(); selectCashDate(today); } else { if(!loanDatesSet.has(today)) loanDatesSet.add(today); renderLoanDates(); selectLoanDate(today); } };
     
-    function formatDateForCompare(dateStr) { let parts = dateStr.split('-'); return `${parts[2]}-${parts[1]}-${parts[0]}`; }
+    function formatDateForCompare(dateStr) { return dateToSort(dateStr); }
     document.getElementById("rangeBackupBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "flex"; };
     document.getElementById("closeRangeModalBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "none"; };
     document.getElementById("exportRangeBtn").onclick = async () => { let start = document.getElementById("startDate").value, end = document.getElementById("endDate").value; if(!start || !end) { alert("कृपया Start Date और End Date दोनों चुनें!"); return; } let filteredCash = cashData.filter(c => { let d = formatDateForCompare(c.date); return d >= start && d <= end; }); let filteredLoan = loanData.filter(l => { let d = formatDateForCompare(l.date); return d >= start && d <= end; }); if(filteredCash.length===0 && filteredLoan.length===0) { alert("इस दायरे में कोई डेटा नहीं है!"); return; } let cashSheet = filteredCash.map(c=>({
@@ -876,10 +868,10 @@
         let entries = data.filter(item => item.name.toLowerCase() === name.toLowerCase());
         let fromDate = document.getElementById("searchFromDate").value;
         let toDate = document.getElementById("searchToDate").value;
-        if (fromDate) { entries = entries.filter(item => item.date.split('-').reverse().join('-') >= fromDate); }
-        if (toDate) { entries = entries.filter(item => item.date.split('-').reverse().join('-') <= toDate); }
+        if (fromDate) { entries = entries.filter(item => dateToSort(item.date) >= fromDate); }
+        if (toDate) { entries = entries.filter(item => dateToSort(item.date) <= toDate); }
         let allEntries = entries.map(item => ({ ...item, amount: item.amount || item.loanAmount || 0, type: currentActiveTab === "cash" ? "Cash" : "Loan", remarkText: item.remark || (item.remark === "" ? "" : null) }));
-        allEntries.sort((a, b) => { let da = a.date.split('-').reverse().join('-'); let db = b.date.split('-').reverse().join('-'); return db.localeCompare(da); });
+        allEntries.sort((a, b) => { return dateToSort(b.date).localeCompare(dateToSort(a.date)); });
         currentFilteredEntries = allEntries;
         let totalAmount = currentFilteredEntries.reduce((s, e) => s + e.amount, 0);
         document.getElementById("searchTotalAmount").innerHTML = `₹${formatAmount(totalAmount)}`;
@@ -961,8 +953,8 @@
     setInterval(() => { if(navigator.onLine && currentUser && document.visibilityState === "visible") { syncFromSupabase(false); } }, 120000);
     
     window.onclick = e=>{ if(e.target.classList.contains("modal")) e.target.style.display="none"; };
-    document.getElementById("tabCashBtn").onclick = ()=>{ currentActiveTab="cash"; showAllCashDates=false; showAllLoanDates=false; document.getElementById("cashSection").style.display="block"; document.getElementById("loanSection").style.display="none"; document.getElementById("tabCashBtn").classList.add("active"); document.getElementById("tabLoanBtn").classList.remove("active"); document.getElementById("searchResultsSection").style.display = "none"; document.getElementById("customerSearch").value = ""; currentSearchName = ""; renderCashDates(); renderCashEntries(); };
-    document.getElementById("tabLoanBtn").onclick = ()=>{ currentActiveTab="loan"; showAllCashDates=false; showAllLoanDates=false; document.getElementById("cashSection").style.display="none"; document.getElementById("loanSection").style.display="block"; document.getElementById("tabLoanBtn").classList.add("active"); document.getElementById("tabCashBtn").classList.remove("active"); document.getElementById("searchResultsSection").style.display = "none"; document.getElementById("customerSearch").value = ""; currentSearchName = ""; renderLoanDates(); renderLoanEntries(); };
+    document.getElementById("tabCashBtn").onclick = ()=>{ currentActiveTab="cash"; document.getElementById("cashSection").style.display="block"; document.getElementById("loanSection").style.display="none"; document.getElementById("tabCashBtn").classList.add("active"); document.getElementById("tabLoanBtn").classList.remove("active"); document.getElementById("searchResultsSection").style.display = "none"; document.getElementById("customerSearch").value = ""; currentSearchName = ""; renderCashDates(); renderCashEntries(); };
+    document.getElementById("tabLoanBtn").onclick = ()=>{ currentActiveTab="loan"; document.getElementById("cashSection").style.display="none"; document.getElementById("loanSection").style.display="block"; document.getElementById("tabLoanBtn").classList.add("active"); document.getElementById("tabCashBtn").classList.remove("active"); document.getElementById("searchResultsSection").style.display = "none"; document.getElementById("customerSearch").value = ""; currentSearchName = ""; renderLoanDates(); renderLoanEntries(); };
     document.getElementById("loginBtn").onclick = checkLogin;
     document.getElementById("loginPassword").addEventListener("keypress", e => { if(e.key === 'Enter') checkLogin(); });
     
