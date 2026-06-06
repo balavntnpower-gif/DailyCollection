@@ -157,7 +157,7 @@
         .suggestion-item{padding:6px 10px;cursor:pointer;border-bottom:1px solid #eee;font-size:0.65rem;display:flex;justify-content:space-between;align-items:center;}
         
         /* Date list with scroll reveal */
-        .date-list{background:#fff;border-radius:20px;padding:5px;margin-bottom:12px;max-height:320px;overflow-y:auto;}
+        .date-list{background:#fff;border-radius:20px;padding:5px;margin-bottom:12px;max-height:200px;overflow-y:auto;scroll-behavior:smooth;}
         .date-item{padding:10px 14px;border-bottom:1px solid #eef2f5;cursor:pointer;font-weight:500;font-size:0.8rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;}
         .date-text{display:flex;align-items:center;gap:6px;flex-shrink:0;font-size:0.8rem;width:100px;}
         .date-amount{font-weight:700;color:#0f6b3a;font-size:0.85rem;white-space:nowrap;flex-shrink:0;text-align:right;width:75px;}
@@ -337,7 +337,7 @@
             </div>
             <div class="form-row-2">
                 <div class="form-group"><input type="number" id="cashAmount" placeholder="रकम (₹)" required></div>
-                <div class="form-group"><input id="cashDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
+                <div class="form-group"><input id="cashDate" placeholder="तारीख (dd-mm-yyyy)" required></div>
             </div>
             <div class="form-group"><select id="cashMode"><option>Cash</option><option>UPI</option><option>Bank</option></select></div>
             <div class="form-group"><input id="cashRemark" placeholder="Remark (optional)"></div>
@@ -357,7 +357,7 @@
             </div>
             <div class="form-row-2">
                 <div class="form-group"><input type="number" id="loanAmount" placeholder="लोन रकम (₹)" required></div>
-                <div class="form-group"><input id="loanDate" placeholder="तारीख (dd/mm/yyyy)" required></div>
+                <div class="form-group"><input id="loanDate" placeholder="तारीख (dd-mm-yyyy)" required></div>
             </div>
             <div class="form-group"><input id="loanAddress" placeholder="पता" required></div>
             <div class="form-group"><select id="loanPeriod"><option value="month">Month (%)</option><option value="60">60 दिन</option><option value="80">80 दिन</option><option value="100">100 दिन</option><option value="120">120 दिन</option></select></div>
@@ -554,7 +554,7 @@
     function openDB() { return new Promise((resolve, reject) => { let req = indexedDB.open("HinduLionDailyCollectionDB", 3); req.onupgradeneeded = e => { let db = e.target.result; if(!db.objectStoreNames.contains("cash")) db.createObjectStore("cash", {keyPath:"id"}); if(!db.objectStoreNames.contains("loan")) db.createObjectStore("loan", {keyPath:"id"}); if(!db.objectStoreNames.contains("notes")) db.createObjectStore("notes", {keyPath:"id"}); }; req.onsuccess = e => { db = e.target.result; resolve(db); }; req.onerror = e => reject(e); }); }
     async function getAll(store) { return new Promise(r => { let tx = db.transaction(store, "readonly"); tx.objectStore(store).getAll().onsuccess = e => r(e.target.result || []); }); }
     function formatAmount(amt) { return amt % 1 === 0 ? amt.toString() : amt.toFixed(2); }
-    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+    function getToday() { let d=new Date(); return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`; }
     function getTodayForFilename() { let d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
     function escape(str){ return String(str||"").replace(/[&<>]/g, m=> m==='&'?'&amp;': m==='<'?'&lt;': '&gt;'); }
     
@@ -626,12 +626,12 @@
         document.getElementById("loanTabAmount").innerHTML = `₹${formatAmount(totalLoan)}`;
         
         if(currentActiveTab === "cash") {
-            let sortedCashDates = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('/').reverse().join('-'); let db=b.split('/').reverse().join('-'); return db.localeCompare(da); });
+            let sortedCashDates = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
             selectedCashDate = sortedCashDates.length > 0 ? sortedCashDates[0] : null;
             renderCashDates();
             renderCashEntries();
         } else {
-            let sortedLoanDates = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('/').reverse().join('-'); let db=b.split('/').reverse().join('-'); return db.localeCompare(da); });
+            let sortedLoanDates = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
             selectedLoanDate = sortedLoanDates.length > 0 ? sortedLoanDates[0] : null;
             renderLoanDates();
             renderLoanEntries();
@@ -646,7 +646,7 @@
     function getCashTotalForDate(date) { return cashData.filter(c=>c.date===date).reduce((s,e)=>s+e.amount,0); }
     
     function renderCashDates() {
-        let arr = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('/').reverse().join('-'); let db=b.split('/').reverse().join('-'); return db.localeCompare(da); });
+        let arr = Array.from(cashDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
         if(!showAllCashDates) arr = arr.slice(0, 4);
         let html = arr.map(d => `<div class="date-item ${selectedCashDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openCashForDate('${d}')">+</button><span class="date-amount">₹${formatAmount(getCashTotalForDate(d))}</span></div>`).join('');
         let container = document.getElementById("cashDatesList");
@@ -684,13 +684,13 @@
     };
     window.editCashWithAuth = (id) => { let pwd = prompt("🔐 Edit के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } let c = cashData.find(c=>c.id===id); if(c){ document.getElementById("cashId").value = c.id; document.getElementById("cashName").value = c.name; document.getElementById("cashAmount").value = c.amount; document.getElementById("cashDate").value = c.date; document.getElementById("cashMode").value = c.mode; document.getElementById("cashRemark").value = c.remark || ""; document.getElementById("cashModal").style.display = "flex"; } };
     window.deleteCashWithAuth = async (id) => { let pwd = prompt("🔐 Delete के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } if(confirm("क्या आप यह प्रविष्टि हटाना चाहते हैं?")){ await del("cash",id); } };
-    document.getElementById("cashForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("cashId").value; let obj = { name: document.getElementById("cashName").value.trim(), amount: parseFloat(document.getElementById("cashAmount").value), date: document.getElementById("cashDate").value.trim(), mode: document.getElementById("cashMode").value, remark: document.getElementById("cashRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || isNaN(obj.amount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें"); if(id) obj.id = parseInt(id); await save("cash", obj); document.getElementById("cashModal").style.display = "none"; await loadAll(); if(obj.date) selectCashDate(obj.date); });
+    document.getElementById("cashForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("cashId").value; let obj = { name: document.getElementById("cashName").value.trim(), amount: parseFloat(document.getElementById("cashAmount").value), date: document.getElementById("cashDate").value.trim(), mode: document.getElementById("cashMode").value, remark: document.getElementById("cashRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || isNaN(obj.amount) || !/^\d{2}-\d{2}-\d{4}$/.test(obj.date)) return alert("सही भरें"); if(id) obj.id = parseInt(id); await save("cash", obj); document.getElementById("cashModal").style.display = "none"; await loadAll(); if(obj.date) selectCashDate(obj.date); });
     
     function getLoanTotalForDate(date) { return loanData.filter(l=>l.date===date).reduce((s,l)=>s+l.loanAmount,0); }
     function calcReturnAndDaily(l){ if(l.period === 'month'){ let ret = l.loanAmount + (l.loanAmount * l.interest / 100); return {ret, daily: null}; } else { let ret = l.loanAmount * 1.20; return {ret, daily: ret / l.period}; } }
     
     function renderLoanDates() {
-        let arr = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('/').reverse().join('-'); let db=b.split('/').reverse().join('-'); return db.localeCompare(da); });
+        let arr = Array.from(loanDatesSet).sort((a,b)=>{ let da=a.split('-').reverse().join('-'); let db=b.split('-').reverse().join('-'); return db.localeCompare(da); });
         if(!showAllLoanDates) arr = arr.slice(0, 4);
         let html = arr.map(d => `<div class="date-item ${selectedLoanDate===d?'active-date':''}" data-date="${d}"><span class="date-text">📅 ${d}</span><button class="add-icon-btn" onclick="event.stopPropagation(); openLoanForDate('${d}')">+</button><span class="date-amount loan-date-amount">₹${formatAmount(getLoanTotalForDate(d))}</span></div>`).join('');
         let container = document.getElementById("loanDatesList");
@@ -731,14 +731,50 @@
     };
     window.editLoanWithAuth = (id) => { let pwd = prompt("🔐 Edit Loan के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } let l = loanData.find(l=>l.id===id); if(l){ document.getElementById("loanId").value = l.id; document.getElementById("loanName").value = l.name; document.getElementById("loanAddress").value = l.address; document.getElementById("loanAmount").value = l.loanAmount; document.getElementById("loanDate").value = l.date; document.getElementById("loanPeriod").value = l.period; if(l.period === "month") { document.getElementById("percentDiv").style.display = "block"; document.getElementById("interestPercent").value = l.interest; } else { document.getElementById("percentDiv").style.display = "none"; } document.getElementById("loanRemark").value = l.remark || ""; document.getElementById("loanModal").style.display = "flex"; } };
     window.deleteLoanWithAuth = async (id) => { let pwd = prompt("🔐 Delete Loan के लिए पासवर्ड डालें:"); if(pwd !== "9090") { alert("❌ गलत पासवर्ड!"); return; } if(confirm("क्या आप यह लोन हटाना चाहते हैं?")){ await del("loan",id); } };
-    document.getElementById("loanForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("loanId").value; let period = document.getElementById("loanPeriod").value; let obj = { name: document.getElementById("loanName").value.trim(), address: document.getElementById("loanAddress").value.trim(), loanAmount: parseFloat(document.getElementById("loanAmount").value), date: document.getElementById("loanDate").value.trim(), period: period, remark: document.getElementById("loanRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || !obj.address || isNaN(obj.loanAmount) || !/^\d{2}\/\d{2}\/\d{4}$/.test(obj.date)) return alert("सही भरें"); if(period === "month") obj.interest = parseFloat(document.getElementById("interestPercent").value); if(id) obj.id = parseInt(id); await save("loan", obj); document.getElementById("loanModal").style.display = "none"; await loadAll(); if(obj.date) selectLoanDate(obj.date); });
+    document.getElementById("loanForm").addEventListener("submit", async(e)=>{ e.preventDefault(); let id = document.getElementById("loanId").value; let period = document.getElementById("loanPeriod").value; let obj = { name: document.getElementById("loanName").value.trim(), address: document.getElementById("loanAddress").value.trim(), loanAmount: parseFloat(document.getElementById("loanAmount").value), date: document.getElementById("loanDate").value.trim(), period: period, remark: document.getElementById("loanRemark").value.trim() || "", userId: currentUser.id, userName: currentUser.name }; if(!obj.name || !obj.address || isNaN(obj.loanAmount) || !/^\d{2}-\d{2}-\d{4}$/.test(obj.date)) return alert("सही भरें"); if(period === "month") obj.interest = parseFloat(document.getElementById("interestPercent").value); if(id) obj.id = parseInt(id); await save("loan", obj); document.getElementById("loanModal").style.display = "none"; await loadAll(); if(obj.date) selectLoanDate(obj.date); });
     document.getElementById("loanPeriod").addEventListener("change", e=>{ document.getElementById("percentDiv").style.display = e.target.value === "month" ? "block" : "none"; });
     document.getElementById("createDateBtn").onclick = () => { let today = getToday(); if(currentActiveTab === "cash") { if(!cashDatesSet.has(today)) cashDatesSet.add(today); renderCashDates(); selectCashDate(today); } else { if(!loanDatesSet.has(today)) loanDatesSet.add(today); renderLoanDates(); selectLoanDate(today); } };
     
-    function formatDateForCompare(dateStr) { let parts = dateStr.split('/'); return `${parts[2]}-${parts[1]}-${parts[0]}`; }
+    function formatDateForCompare(dateStr) { let parts = dateStr.split('-'); return `${parts[2]}-${parts[1]}-${parts[0]}`; }
     document.getElementById("rangeBackupBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "flex"; };
     document.getElementById("closeRangeModalBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "none"; };
-    document.getElementById("exportRangeBtn").onclick = async () => { let start = document.getElementById("startDate").value, end = document.getElementById("endDate").value; if(!start || !end) { alert("कृपया Start Date और End Date दोनों चुनें!"); return; } let filteredCash = cashData.filter(c => { let d = formatDateForCompare(c.date); return d >= start && d <= end; }); let filteredLoan = loanData.filter(l => { let d = formatDateForCompare(l.date); return d >= start && d <= end; }); if(filteredCash.length===0 && filteredLoan.length===0) { alert("इस दायरे में कोई डेटा नहीं है!"); return; } let cashSheet = filteredCash.map(c=>({Type:"Cash", Name:c.name, Amount:c.amount, Date:c.date, Mode:c.mode, Remark:c.remark||""})); let loanSheet = filteredLoan.map(l=>({Type:"Loan", Name:l.name, Address:l.address, "Loan Amount":l.loanAmount, Date:l.date, Remark:l.remark||""})); let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws1, "Cash"); XLSX.utils.book_append_sheet(wb, ws2, "Loan"); let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"}); let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${start}_to_${end}.xlsx`; a.click(); URL.revokeObjectURL(a.href); document.getElementById("dateRangeModal").style.display = "none"; showToast(`📊 ${filteredCash.length} Cash, ${filteredLoan.length} Loan entries exported`); };
+    document.getElementById("exportRangeBtn").onclick = async () => { let start = document.getElementById("startDate").value, end = document.getElementById("endDate").value; if(!start || !end) { alert("कृपया Start Date और End Date दोनों चुनें!"); return; } let filteredCash = cashData.filter(c => { let d = formatDateForCompare(c.date); return d >= start && d <= end; }); let filteredLoan = loanData.filter(l => { let d = formatDateForCompare(l.date); return d >= start && d <= end; }); if(filteredCash.length===0 && filteredLoan.length===0) { alert("इस दायरे में कोई डेटा नहीं है!"); return; } let cashSheet = filteredCash.map(c=>({
+        "Type":"Cash",
+        "नाम / पता":c.name,
+        "लोन रकम":"",
+        "वापसी":"",
+        "प्रति दिन":"",
+        "अवधि/ब्याज":"",
+        "तारीख":c.date,
+        "Remark":c.remark||"",
+        "नगद रकम":c.amount,
+        "Mode":c.mode
+    }));
+    let loanSheet = filteredLoan.map(l=>{ 
+        let rd = calcReturnAndDaily(l);
+        let periodText = l.period === "month" ? l.interest+"%" : l.period+" दिन";
+        let returnVal = l.period === "month" ? "" : rd.ret;
+        let dailyVal = l.period === "month" ? "" : rd.daily;
+        return {
+            "Type":"Loan",
+            "नाम / पता": l.name + (l.address ? " / "+l.address : ""),
+            "लोन रकम":l.loanAmount,
+            "वापसी":returnVal,
+            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
+            "अवधि/ब्याज":periodText,
+            "तारीख":l.date,
+            "Remark":l.remark||"",
+            "नगद रकम":"",
+            "Mode":""
+        };
+    });
+    let allSheet = [...cashSheet, ...loanSheet];
+    let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet), wsCombined = XLSX.utils.json_to_sheet(allSheet);
+    let wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsCombined, "All Data");
+    XLSX.utils.book_append_sheet(wb, ws1, "Cash");
+    XLSX.utils.book_append_sheet(wb, ws2, "Loan");
+    let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"}); let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${start}_to_${end}.xlsx`; a.click(); URL.revokeObjectURL(a.href); document.getElementById("dateRangeModal").style.display = "none"; showToast(`📊 ${filteredCash.length} Cash, ${filteredLoan.length} Loan entries exported`); };
     
     async function loadNotes() { if(!db) return; let tx = db.transaction("notes", "readonly"); let req = tx.objectStore("notes").get(`noteData_${currentUser.id}`); req.onsuccess = () => { if(req.result) noteCounts = req.result.counts || { 500:"",200:"",100:"",50:"",20:"",10:"",5:"" }; renderNotePopup(); }; }
     async function saveNotesToDB() { await save("notes", { id: `noteData_${currentUser.id}`, counts: noteCounts }); _pendingChanges.notes.add('notes'); _savePending(); showToast("✅ Note counts saved"); }
@@ -753,7 +789,47 @@
     async function getAllData() { return { cash: cashData, loan: loanData, cashDates: Array.from(cashDatesSet), loanDates: Array.from(loanDatesSet) }; }
     function downloadFile(content, filename, type) { let blob = new Blob([content], {type}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href); showToast(`📁 ${filename} डाउनलोड हुआ`); }
     document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `backup_${currentUser.id}_${ds}.json`, "application/json"); };
-    document.getElementById("excelBackupBtn").onclick = async() => { let cashSheet = cashData.map(c=>({Type:"Cash", Name:c.name, Amount:c.amount, Date:c.date, Mode:c.mode, Remark:c.remark||""})); let loanSheet = loanData.map(l=>({Type:"Loan", Name:l.name, Address:l.address, "Loan Amount":l.loanAmount, Date:l.date, Remark:l.remark||""})); let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws1, "Cash"); XLSX.utils.book_append_sheet(wb, ws2, "Loan"); let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"}); let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${getTodayForFilename()}.xlsx`; a.click(); URL.revokeObjectURL(a.href); showToast("📊 Excel Backup डाउनलोड हुआ"); };
+    document.getElementById("excelBackupBtn").onclick = async() => { 
+    let cashSheet = cashData.map(c=>({
+        "Type":"Cash",
+        "नाम / पता":c.name,
+        "लोन रकम":"",
+        "वापसी":"",
+        "प्रति दिन":"",
+        "अवधि/ब्याज":"",
+        "तारीख":c.date,
+        "Remark":c.remark||"",
+        "नगद रकम":c.amount,
+        "Mode":c.mode
+    }));
+    let loanSheet = loanData.map(l=>{ 
+        let rd = calcReturnAndDaily(l);
+        let periodText = l.period === "month" ? l.interest+"%" : l.period+" दिन";
+        let returnVal = l.period === "month" ? "" : rd.ret;
+        let dailyVal = l.period === "month" ? "" : rd.daily;
+        return {
+            "Type":"Loan",
+            "नाम / पता": l.name + (l.address ? " / "+l.address : ""),
+            "लोन रकम":l.loanAmount,
+            "वापसी":returnVal,
+            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
+            "अवधि/ब्याज":periodText,
+            "तारीख":l.date,
+            "Remark":l.remark||"",
+            "नगद रकम":"",
+            "Mode":""
+        };
+    });
+    let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet);
+    let wbCombined = XLSX.utils.book_new();
+    let allSheet = [...cashSheet, ...loanSheet];
+    let wsCombined = XLSX.utils.json_to_sheet(allSheet);
+    XLSX.utils.book_append_sheet(wbCombined, wsCombined, "All Data");
+    XLSX.utils.book_append_sheet(wbCombined, ws1, "Cash");
+    XLSX.utils.book_append_sheet(wbCombined, ws2, "Loan");
+    let buf = XLSX.write(wbCombined, {bookType:"xlsx", type:"array"});
+    let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${getTodayForFilename()}.xlsx`; a.click(); URL.revokeObjectURL(a.href); showToast("📊 Excel Backup डाउनलोड हुआ (Cash+Loan सभी fields)"); };
     document.getElementById("restoreBtn").onclick = () => document.getElementById("restoreFileInput").click();
     document.getElementById("restoreFileInput").addEventListener("change", async(e) => { let file = e.target.files[0]; if(!file) return; let text = await file.text(); try { let data = JSON.parse(text); if(data.cash) for(let c of data.cash) { c.userId = currentUser.id; await save("cash", c); } if(data.loan) for(let l of data.loan) { l.userId = currentUser.id; await save("loan", l); } await loadAll(); showToast("✅ Restore सफल"); } catch(e) { alert("Invalid JSON"); } e.target.value = ""; });
     document.getElementById("refreshDataBtn").onclick = async () => { await syncFromSupabase(false); };
@@ -800,10 +876,10 @@
         let entries = data.filter(item => item.name.toLowerCase() === name.toLowerCase());
         let fromDate = document.getElementById("searchFromDate").value;
         let toDate = document.getElementById("searchToDate").value;
-        if (fromDate) { entries = entries.filter(item => item.date.split('/').reverse().join('-') >= fromDate); }
-        if (toDate) { entries = entries.filter(item => item.date.split('/').reverse().join('-') <= toDate); }
+        if (fromDate) { entries = entries.filter(item => item.date.split('-').reverse().join('-') >= fromDate); }
+        if (toDate) { entries = entries.filter(item => item.date.split('-').reverse().join('-') <= toDate); }
         let allEntries = entries.map(item => ({ ...item, amount: item.amount || item.loanAmount || 0, type: currentActiveTab === "cash" ? "Cash" : "Loan", remarkText: item.remark || (item.remark === "" ? "" : null) }));
-        allEntries.sort((a, b) => { let da = a.date.split('/').reverse().join('-'); let db = b.date.split('/').reverse().join('-'); return db.localeCompare(da); });
+        allEntries.sort((a, b) => { let da = a.date.split('-').reverse().join('-'); let db = b.date.split('-').reverse().join('-'); return db.localeCompare(da); });
         currentFilteredEntries = allEntries;
         let totalAmount = currentFilteredEntries.reduce((s, e) => s + e.amount, 0);
         document.getElementById("searchTotalAmount").innerHTML = `₹${formatAmount(totalAmount)}`;
