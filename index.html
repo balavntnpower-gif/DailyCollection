@@ -731,16 +731,11 @@
     document.getElementById("rangeBackupBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "flex"; };
     document.getElementById("closeRangeModalBtn").onclick = () => { document.getElementById("dateRangeModal").style.display = "none"; };
     document.getElementById("exportRangeBtn").onclick = async () => { let start = document.getElementById("startDate").value, end = document.getElementById("endDate").value; if(!start || !end) { alert("कृपया Start Date और End Date दोनों चुनें!"); return; } let filteredCash = cashData.filter(c => { let d = formatDateForCompare(c.date); return d >= start && d <= end; }); let filteredLoan = loanData.filter(l => { let d = formatDateForCompare(l.date); return d >= start && d <= end; }); if(filteredCash.length===0 && filteredLoan.length===0) { alert("इस दायरे में कोई डेटा नहीं है!"); return; } let cashSheet = filteredCash.map(c=>({
-        "Type":"Cash",
         "नाम / पता":c.name,
-        "लोन रकम":"",
-        "वापसी":"",
-        "प्रति दिन":"",
-        "अवधि/ब्याज":"",
-        "तारीख":c.date,
-        "Remark":c.remark||"",
         "नगद रकम":c.amount,
-        "Mode":c.mode
+        "तारीख":c.date,
+        "Mode":c.mode,
+        "Remark":c.remark||""
     }));
     let loanSheet = filteredLoan.map(l=>{ 
         let rd = calcReturnAndDaily(l);
@@ -748,22 +743,17 @@
         let returnVal = l.period === "month" ? "" : rd.ret;
         let dailyVal = l.period === "month" ? "" : rd.daily;
         return {
-            "Type":"Loan",
             "नाम / पता": l.name + (l.address ? " / "+l.address : ""),
             "लोन रकम":l.loanAmount,
-            "वापसी":returnVal,
-            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
-            "अवधि/ब्याज":periodText,
             "तारीख":l.date,
             "Remark":l.remark||"",
-            "नगद रकम":"",
-            "Mode":""
+            "वापसी":returnVal,
+            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
+            "अवधि/ब्याज":periodText
         };
     });
-    let allSheet = [...cashSheet, ...loanSheet];
-    let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet), wsCombined = XLSX.utils.json_to_sheet(allSheet);
+    let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet);
     let wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, wsCombined, "All Data");
     XLSX.utils.book_append_sheet(wb, ws1, "Cash");
     XLSX.utils.book_append_sheet(wb, ws2, "Loan");
     let buf = XLSX.write(wb, {bookType:"xlsx", type:"array"}); let blob = new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup_${currentUser.id}_${start}_to_${end}.xlsx`; a.click(); URL.revokeObjectURL(a.href); document.getElementById("dateRangeModal").style.display = "none"; showToast(`📊 ${filteredCash.length} Cash, ${filteredLoan.length} Loan entries exported`); };
@@ -783,16 +773,11 @@
     document.getElementById("jsonBackupBtn").onclick = async() => { let data = await getAllData(); let ds = getTodayForFilename(); downloadFile(JSON.stringify(data, null, 2), `backup_${currentUser.id}_${ds}.json`, "application/json"); };
     document.getElementById("excelBackupBtn").onclick = async() => { 
     let cashSheet = cashData.map(c=>({
-        "Type":"Cash",
         "नाम / पता":c.name,
-        "लोन रकम":"",
-        "वापसी":"",
-        "प्रति दिन":"",
-        "अवधि/ब्याज":"",
-        "तारीख":c.date,
-        "Remark":c.remark||"",
         "नगद रकम":c.amount,
-        "Mode":c.mode
+        "तारीख":c.date,
+        "Mode":c.mode,
+        "Remark":c.remark||""
     }));
     let loanSheet = loanData.map(l=>{ 
         let rd = calcReturnAndDaily(l);
@@ -800,23 +785,17 @@
         let returnVal = l.period === "month" ? "" : rd.ret;
         let dailyVal = l.period === "month" ? "" : rd.daily;
         return {
-            "Type":"Loan",
             "नाम / पता": l.name + (l.address ? " / "+l.address : ""),
             "लोन रकम":l.loanAmount,
-            "वापसी":returnVal,
-            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
-            "अवधि/ब्याज":periodText,
             "तारीख":l.date,
             "Remark":l.remark||"",
-            "नगद रकम":"",
-            "Mode":""
+            "वापसी":returnVal,
+            "प्रति दिन":dailyVal ? parseFloat(dailyVal.toFixed(2)) : "",
+            "अवधि/ब्याज":periodText
         };
     });
     let ws1 = XLSX.utils.json_to_sheet(cashSheet), ws2 = XLSX.utils.json_to_sheet(loanSheet);
     let wbCombined = XLSX.utils.book_new();
-    let allSheet = [...cashSheet, ...loanSheet];
-    let wsCombined = XLSX.utils.json_to_sheet(allSheet);
-    XLSX.utils.book_append_sheet(wbCombined, wsCombined, "All Data");
     XLSX.utils.book_append_sheet(wbCombined, ws1, "Cash");
     XLSX.utils.book_append_sheet(wbCombined, ws2, "Loan");
     let buf = XLSX.write(wbCombined, {bookType:"xlsx", type:"array"});
