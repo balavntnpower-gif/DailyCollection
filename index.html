@@ -230,6 +230,54 @@
         .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1e2a32;color:#fff;padding:8px;border-radius:50px;text-align:center;font-size:0.7rem;z-index:1200;animation:fadeInOut 2s ease-in-out;}
         .hide-app{display:none;}
         @keyframes fadeInOut{0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(20px);}}
+        /* My Ledger Styles */
+        .ledger-month-card{
+            background:#fff;
+            border-radius:16px;
+            padding:12px 14px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.09);
+            border-left:5px solid #0f6b3a;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            min-height:72px;
+            flex-shrink:0;
+        }
+        .ledger-month-card.deficit{border-left-color:#dc2626;}
+        .ledger-month-label{
+            font-size:0.95rem;font-weight:800;color:#333;
+            min-width:68px;
+        }
+        .ledger-figures{
+            display:flex;flex-direction:column;gap:3px;
+            flex:1;padding:0 10px;
+        }
+        .ledger-row{
+            display:flex;justify-content:space-between;align-items:center;
+            font-size:0.68rem;
+        }
+        .ledger-row span:first-child{color:#666;font-weight:600;}
+        .ledger-row span:last-child{font-weight:700;}
+        .ledger-loan-val{color:#dc2626;}
+        .ledger-coll-val{color:#0f6b3a;}
+        .ledger-diff-badge{
+            padding:4px 10px;border-radius:30px;
+            font-size:0.7rem;font-weight:800;
+            white-space:nowrap;text-align:center;min-width:64px;
+        }
+        .ledger-diff-surplus{background:#e6f9ee;color:#0a7a3c;}
+        .ledger-diff-deficit{background:#fff0f0;color:#dc2626;}
+        .ledger-diff-zero{background:#f0f0f0;color:#666;}
+        .ledger-summary-box{
+            flex:1;background:#f8f9fa;border-radius:12px;
+            padding:8px 10px;text-align:center;
+        }
+        .ledger-summary-box .ls-label{font-size:0.58rem;color:#888;display:block;margin-bottom:2px;}
+        .ledger-summary-box .ls-value{font-size:0.85rem;font-weight:800;}
+        #ledgerCardsContainer::-webkit-scrollbar{width:4px;}
+        #ledgerCardsContainer::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px;}
+        #ledgerCardsContainer::-webkit-scrollbar-thumb{background:#0f6b3a;border-radius:4px;}
+
         @media (max-width:550px){
             .date-text{font-size:0.7rem;width:90px;}
             .date-amount{font-size:0.7rem;width:65px;}
@@ -290,6 +338,7 @@
                 <button id="excelBackupBtn"><i class="fas fa-file-excel"></i> Excel</button>
                 <button id="rangeBackupBtn"><i class="fas fa-calendar-range"></i> Date Range Excel</button>
                 <button id="restoreBtn"><i class="fas fa-upload"></i> Restore</button>
+                <button id="myLedgerBtn"><i class="fas fa-book"></i> My Ledger</button>
             </div>
         </div>
         <button class="tab-btn loan-tab" id="tabLoanBtn">
@@ -324,6 +373,22 @@
 
 <div id="dateRangeModal" class="modal"><div class="modal-card"><h3>Date Range Excel Backup</h3><div class="date-range-group"><input type="date" id="startDate"><input type="date" id="endDate"></div><div class="modal-buttons"><button id="exportRangeBtn" class="btn-save-small">Export Excel</button><button id="closeRangeModalBtn" class="btn-cancel">Cancel</button></div></div></div>
 <div id="reminderPopup" class="reminder-popup hide"><i class="fas fa-bell" style="font-size:1.8rem;"></i><h3>Backup Reminder</h3><p>कृपया अभी JSON Backup लें।</p><button id="reminderBackupBtn" class="reminder-btn">JSON Backup Now</button></div>
+
+<!-- My Ledger Modal -->
+<div id="myLedgerModal" class="modal">
+    <div class="modal-card" style="max-width:420px;padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:1rem;color:#0f6b3a;margin:0;"><i class="fas fa-book"></i> My Ledger</h3>
+            <button onclick="document.getElementById('myLedgerModal').style.display='none'" style="background:#e74c3c;border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.75rem;"><i class="fas fa-times"></i></button>
+        </div>
+        <!-- Summary totals -->
+        <div id="ledgerSummaryRow" style="display:flex;gap:8px;margin-bottom:12px;"></div>
+        <!-- Month Cards Container -->
+        <div id="ledgerCardsContainer" style="display:flex;flex-direction:column;gap:10px;max-height:calc(5 * 88px + 4 * 10px);overflow-y:auto;padding-right:2px;">
+        </div>
+        <div id="ledgerNoData" style="display:none;text-align:center;padding:30px;color:#999;font-size:0.85rem;">📭 कोई डेटा नहीं मिला</div>
+    </div>
+</div>
 
 <!-- Cash Modal -->
 <div id="cashModal" class="modal">
@@ -967,6 +1032,118 @@
     document.getElementById("customerSearch").addEventListener("blur", () => { setTimeout(() => { document.getElementById("searchSuggestions").classList.remove("show"); }, 200); });
     document.getElementById("closeSearchBtn").addEventListener("click", () => { document.getElementById("searchResultsSection").style.display = "none"; document.getElementById("customerSearch").value = ""; currentSearchName = ""; });
     
+    // ===================== MY LEDGER =====================
+    function openMyLedger() {
+        // DD-MM-YYYY se Month-Year key nikalna
+        function getMonthKey(dateStr) {
+            if(!dateStr) return null;
+            let parts = normalizeDate(dateStr).split('-');
+            if(parts.length < 3) return null;
+            return parts[1] + '-' + parts[2]; // MM-YYYY
+        }
+
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        function formatMonthLabel(key) {
+            // key = MM-YYYY
+            let [mm, yyyy] = key.split('-');
+            let monthIdx = parseInt(mm) - 1;
+            let yr = yyyy.slice(2); // last 2 digits
+            return monthNames[monthIdx] + '-' + yr;
+        }
+
+        // Loan data se monthly loan total
+        let loanByMonth = {};
+        loanData.forEach(l => {
+            let key = getMonthKey(l.date);
+            if(!key) return;
+            loanByMonth[key] = (loanByMonth[key] || 0) + (l.loanAmount || 0);
+        });
+
+        // Cash data se monthly collection total
+        let collByMonth = {};
+        cashData.forEach(c => {
+            let key = getMonthKey(c.date);
+            if(!key) return;
+            collByMonth[key] = (collByMonth[key] || 0) + (c.amount || 0);
+        });
+
+        // Sabhi unique months merge karo
+        let allKeys = new Set([...Object.keys(loanByMonth), ...Object.keys(collByMonth)]);
+
+        if(allKeys.size === 0) {
+            document.getElementById('ledgerCardsContainer').innerHTML = '';
+            document.getElementById('ledgerNoData').style.display = 'block';
+            document.getElementById('ledgerSummaryRow').innerHTML = '';
+            document.getElementById('myLedgerModal').style.display = 'flex';
+            return;
+        }
+        document.getElementById('ledgerNoData').style.display = 'none';
+
+        // Sort: latest month pehle (YYYY-MM order)
+        let sortedKeys = Array.from(allKeys).sort((a, b) => {
+            let [amm, ayyyy] = a.split('-');
+            let [bmm, byyyy] = b.split('-');
+            let aStr = ayyyy + amm;
+            let bStr = byyyy + bmm;
+            return bStr.localeCompare(aStr);
+        });
+
+        // Grand totals for summary
+        let grandLoan = 0, grandColl = 0;
+        sortedKeys.forEach(k => {
+            grandLoan += loanByMonth[k] || 0;
+            grandColl += collByMonth[k] || 0;
+        });
+        let grandDiff = grandColl - grandLoan;
+
+        // Summary row
+        let summaryHTML = `
+            <div class="ledger-summary-box"><span class="ls-label">कुल लोन</span><span class="ls-value" style="color:#dc2626">₹${formatAmount(grandLoan)}</span></div>
+            <div class="ledger-summary-box"><span class="ls-label">कुल वसूली</span><span class="ls-value" style="color:#0f6b3a">₹${formatAmount(grandColl)}</span></div>
+            <div class="ledger-summary-box"><span class="ls-label">अंतर</span><span class="ls-value" style="color:${grandDiff>=0?'#0a7a3c':'#dc2626'}">${grandDiff>=0?'+':''}₹${formatAmount(Math.abs(grandDiff))}</span></div>
+        `;
+        document.getElementById('ledgerSummaryRow').innerHTML = summaryHTML;
+
+        // Month cards banao
+        let cardsHTML = sortedKeys.map(key => {
+            let loan = loanByMonth[key] || 0;
+            let coll = collByMonth[key] || 0;
+            let diff = coll - loan;
+            let isDeficit = diff < 0;
+            let isZero = diff === 0;
+            let diffClass = isZero ? 'ledger-diff-zero' : (isDeficit ? 'ledger-diff-deficit' : 'ledger-diff-surplus');
+            let diffSign = diff > 0 ? '+' : '';
+            let cardClass = isDeficit ? 'ledger-month-card deficit' : 'ledger-month-card';
+            return `
+            <div class="${cardClass}">
+                <div class="ledger-month-label">${formatMonthLabel(key)}</div>
+                <div class="ledger-figures">
+                    <div class="ledger-row">
+                        <span>📊 लोन:</span>
+                        <span class="ledger-loan-val">₹${formatAmount(loan)}</span>
+                    </div>
+                    <div class="ledger-row">
+                        <span>💰 वसूली:</span>
+                        <span class="ledger-coll-val">₹${formatAmount(coll)}</span>
+                    </div>
+                </div>
+                <div class="ledger-diff-badge ${diffClass}">
+                    ${diffSign}₹${formatAmount(Math.abs(diff))}
+                </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('ledgerCardsContainer').innerHTML = cardsHTML;
+        document.getElementById('myLedgerModal').style.display = 'flex';
+    }
+
+    document.getElementById("myLedgerBtn").onclick = () => {
+        document.getElementById("toolsDropdownMenu").classList.remove("show");
+        openMyLedger();
+    };
+    // ===================== MY LEDGER END =====================
+
     document.getElementById("toolsDropdownBtn").onclick = () => { document.getElementById("toolsDropdownMenu").classList.toggle("show"); };
     window.addEventListener("click", function(e) {
         if (!e.target.closest('.tools-dropdown-container')) {
