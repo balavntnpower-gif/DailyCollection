@@ -3,13 +3,13 @@
     "Rudra": {
       "password": "Admin@123",
       "role": "admin",
-      "expiry": "2026-12-31",
+      "expiry": "2028-12-31",
       "name": "रुद्र"
     },
     "Prakash": {
       "password": "Prakash",
       "role": "user",
-      "expiry": "2026-12-15",
+      "expiry": "2028-12-15",
       "name": "प्रकाश"
     },
     "Omprakash": {
