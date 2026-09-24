@@ -230,51 +230,50 @@
         .toast{position:fixed;bottom:20px;left:20px;right:20px;background:#1e2a32;color:#fff;padding:8px;border-radius:50px;text-align:center;font-size:0.7rem;z-index:1200;animation:fadeInOut 2s ease-in-out;}
         .hide-app{display:none;}
         @keyframes fadeInOut{0%{opacity:0;transform:translateY(20px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(20px);}}
-        /* My Ledger Styles */
+        /* My Ledger Styles — Compact */
         .ledger-month-card{
             background:#fff;
-            border-radius:16px;
-            padding:12px 14px;
-            box-shadow:0 2px 8px rgba(0,0,0,0.09);
-            border-left:5px solid #0f6b3a;
+            border-radius:10px;
+            padding:7px 10px;
+            box-shadow:0 1px 4px rgba(0,0,0,0.07);
+            border-left:4px solid #0f6b3a;
             display:flex;
             align-items:center;
             justify-content:space-between;
-            min-height:72px;
+            gap:6px;
             flex-shrink:0;
         }
         .ledger-month-card.deficit{border-left-color:#dc2626;}
         .ledger-month-label{
-            font-size:0.95rem;font-weight:800;color:#333;
-            min-width:68px;
+            font-size:0.75rem;font-weight:800;color:#222;
+            min-width:52px;
         }
         .ledger-figures{
-            display:flex;flex-direction:column;gap:3px;
-            flex:1;padding:0 10px;
+            display:flex;gap:10px;flex:1;align-items:center;
+            justify-content:center;
         }
-        .ledger-row{
-            display:flex;justify-content:space-between;align-items:center;
-            font-size:0.68rem;
+        .ledger-fig-item{
+            display:flex;flex-direction:column;align-items:center;gap:1px;
         }
-        .ledger-row span:first-child{color:#666;font-weight:600;}
-        .ledger-row span:last-child{font-weight:700;}
+        .ledger-fig-label{font-size:0.52rem;color:#999;font-weight:600;line-height:1;}
+        .ledger-fig-val{font-size:0.7rem;font-weight:800;line-height:1;}
         .ledger-loan-val{color:#dc2626;}
         .ledger-coll-val{color:#0f6b3a;}
         .ledger-diff-badge{
-            padding:4px 10px;border-radius:30px;
-            font-size:0.7rem;font-weight:800;
-            white-space:nowrap;text-align:center;min-width:64px;
+            padding:3px 8px;border-radius:20px;
+            font-size:0.65rem;font-weight:800;
+            white-space:nowrap;text-align:center;min-width:58px;
         }
         .ledger-diff-surplus{background:#e6f9ee;color:#0a7a3c;}
         .ledger-diff-deficit{background:#fff0f0;color:#dc2626;}
         .ledger-diff-zero{background:#f0f0f0;color:#666;}
         .ledger-summary-box{
-            flex:1;background:#f8f9fa;border-radius:12px;
-            padding:8px 10px;text-align:center;
+            flex:1;background:#f0f7f3;border-radius:8px;
+            padding:5px 6px;text-align:center;
         }
-        .ledger-summary-box .ls-label{font-size:0.58rem;color:#888;display:block;margin-bottom:2px;}
-        .ledger-summary-box .ls-value{font-size:0.85rem;font-weight:800;}
-        #ledgerCardsContainer::-webkit-scrollbar{width:4px;}
+        .ledger-summary-box .ls-label{font-size:0.52rem;color:#888;display:block;margin-bottom:1px;}
+        .ledger-summary-box .ls-value{font-size:0.72rem;font-weight:800;}
+        #ledgerCardsContainer::-webkit-scrollbar{width:3px;}
         #ledgerCardsContainer::-webkit-scrollbar-track{background:#f1f1f1;border-radius:4px;}
         #ledgerCardsContainer::-webkit-scrollbar-thumb{background:#0f6b3a;border-radius:4px;}
 
@@ -376,17 +375,16 @@
 
 <!-- My Ledger Modal -->
 <div id="myLedgerModal" class="modal">
-    <div class="modal-card" style="max-width:420px;padding:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-            <h3 style="font-size:1rem;color:#0f6b3a;margin:0;"><i class="fas fa-book"></i> My Ledger</h3>
-            <button onclick="document.getElementById('myLedgerModal').style.display='none'" style="background:#e74c3c;border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:0.75rem;"><i class="fas fa-times"></i></button>
+    <div class="modal-card" style="max-width:400px;padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <h3 style="font-size:0.85rem;color:#0f6b3a;margin:0;font-weight:800;"><i class="fas fa-book"></i> My Ledger</h3>
+            <button onclick="document.getElementById('myLedgerModal').style.display='none'" style="background:#e74c3c;border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:0.6rem;display:flex;align-items:center;justify-content:center;"><i class="fas fa-times"></i></button>
         </div>
         <!-- Summary totals -->
-        <div id="ledgerSummaryRow" style="display:flex;gap:8px;margin-bottom:12px;"></div>
+        <div id="ledgerSummaryRow" style="display:flex;gap:5px;margin-bottom:8px;"></div>
         <!-- Month Cards Container -->
-        <div id="ledgerCardsContainer" style="display:flex;flex-direction:column;gap:10px;max-height:calc(5 * 88px + 4 * 10px);overflow-y:auto;padding-right:2px;">
-        </div>
-        <div id="ledgerNoData" style="display:none;text-align:center;padding:30px;color:#999;font-size:0.85rem;">📭 कोई डेटा नहीं मिला</div>
+        <div id="ledgerCardsContainer" style="display:flex;flex-direction:column;gap:6px;max-height:calc(5 * 52px + 4 * 6px);overflow-y:auto;padding-right:2px;"></div>
+        <div id="ledgerNoData" style="display:none;text-align:center;padding:20px;color:#999;font-size:0.8rem;">📭 कोई डेटा नहीं मिला</div>
     </div>
 </div>
 
@@ -1097,15 +1095,15 @@
         });
         let grandDiff = grandColl - grandLoan;
 
-        // Summary row
+        // Summary row — compact
         let summaryHTML = `
-            <div class="ledger-summary-box"><span class="ls-label">कुल लोन</span><span class="ls-value" style="color:#dc2626">₹${formatAmount(grandLoan)}</span></div>
-            <div class="ledger-summary-box"><span class="ls-label">कुल वसूली</span><span class="ls-value" style="color:#0f6b3a">₹${formatAmount(grandColl)}</span></div>
-            <div class="ledger-summary-box"><span class="ls-label">अंतर</span><span class="ls-value" style="color:${grandDiff>=0?'#0a7a3c':'#dc2626'}">${grandDiff>=0?'+':''}₹${formatAmount(Math.abs(grandDiff))}</span></div>
+            <div class="ledger-summary-box"><span class="ls-label">📊 कुल लोन</span><span class="ls-value" style="color:#dc2626">₹${formatAmount(grandLoan)}</span></div>
+            <div class="ledger-summary-box"><span class="ls-label">💰 कुल वसूली</span><span class="ls-value" style="color:#0f6b3a">₹${formatAmount(grandColl)}</span></div>
+            <div class="ledger-summary-box" style="background:${grandDiff>=0?'#e6f9ee':'#fff0f0'}"><span class="ls-label">⚖️ अंतर</span><span class="ls-value" style="color:${grandDiff>=0?'#0a7a3c':'#dc2626'}">${grandDiff>=0?'+':''}₹${formatAmount(Math.abs(grandDiff))}</span></div>
         `;
         document.getElementById('ledgerSummaryRow').innerHTML = summaryHTML;
 
-        // Month cards banao
+        // Month cards banao — compact
         let cardsHTML = sortedKeys.map(key => {
             let loan = loanByMonth[key] || 0;
             let coll = collByMonth[key] || 0;
@@ -1115,22 +1113,20 @@
             let diffClass = isZero ? 'ledger-diff-zero' : (isDeficit ? 'ledger-diff-deficit' : 'ledger-diff-surplus');
             let diffSign = diff > 0 ? '+' : '';
             let cardClass = isDeficit ? 'ledger-month-card deficit' : 'ledger-month-card';
-            return `
-            <div class="${cardClass}">
+            return `<div class="${cardClass}">
                 <div class="ledger-month-label">${formatMonthLabel(key)}</div>
                 <div class="ledger-figures">
-                    <div class="ledger-row">
-                        <span>📊 लोन:</span>
-                        <span class="ledger-loan-val">₹${formatAmount(loan)}</span>
+                    <div class="ledger-fig-item">
+                        <span class="ledger-fig-label">लोन</span>
+                        <span class="ledger-fig-val ledger-loan-val">₹${formatAmount(loan)}</span>
                     </div>
-                    <div class="ledger-row">
-                        <span>💰 वसूली:</span>
-                        <span class="ledger-coll-val">₹${formatAmount(coll)}</span>
+                    <div style="width:1px;height:24px;background:#eee;flex-shrink:0;"></div>
+                    <div class="ledger-fig-item">
+                        <span class="ledger-fig-label">वसूली</span>
+                        <span class="ledger-fig-val ledger-coll-val">₹${formatAmount(coll)}</span>
                     </div>
                 </div>
-                <div class="ledger-diff-badge ${diffClass}">
-                    ${diffSign}₹${formatAmount(Math.abs(diff))}
-                </div>
+                <div class="ledger-diff-badge ${diffClass}">${diffSign}₹${formatAmount(Math.abs(diff))}</div>
             </div>`;
         }).join('');
 
